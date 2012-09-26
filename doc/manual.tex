@@ -1,0 +1,112 @@
+\documentclass[pdftex,12pt,a4paper]{report} %[12pt,a4paper,twoside,openright]
+\usepackage{natbib}
+\usepackage{multirow}
+\usepackage{qtree}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{float}
+\usepackage{verbatim}
+\usepackage{acronym}
+\usepackage{xspace}
+%\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{color}
+%\usepackage[utf8]{inputenc}
+
+%\usepackage{multirow}
+%\usepackage{pbox}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+%\usepackage{titlesec}
+%\usepackage{natbib}
+%\usepackage{xspace}
+%\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+%\renewcommand{\rmdefault}{ptm}
+%\setlength{\parindent}{0cm}
+
+\usepackage{hyperref}
+
+\newcommand{\fixme}[1]{{\bf \color{red} [*FIXME* }{\em #1}{\bf \color{red} ]}}
+\newcommand{\fixed}[1]{{\bf \color{blue} [*FIXED?* }{\em #1}{\bf \color{blue} ]}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\PET}{\textsc{PET}\xspace}
+\newcommand{\PEJ}{\textsc{PEJ}\xspace}
+\newcommand{\rel}[1]{{\it #1}}
+\newcommand{\param}[2]{{\tt #1=}{\it #2}}
+
+\title{Post-Editing Tool\\PET}
+\date{\today}
+\author{Wilker Aziz\\ Research Group in Computation Linguistics, University of Wolverhampton \and Lucia Specia \\ Computer Science Department, University of Sheffield}
+
+ 
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{forestGreen}{RGB}{34,139,34}
+\definecolor{orangeRed}{RGB}{255,69,0}
+ 
+
+\lstdefinelanguage{xml}{
+	%basicstyle=\small,
+	sensitive=false,
+}
+ 
+\lstdefinestyle{workflowStyle}{
+	language=XML,
+	%Formatting
+	basicstyle=\scriptsize,
+	sensitive=true,
+	showstringspaces=false,
+	numbers=left,
+	numberstyle=\tiny,
+	tabsize=1,
+	numbersep=3pt,
+	extendedchars=true,
+	xleftmargin=2em,
+	lineskip=1pt,
+	breaklines,
+	captionpos=b,
+	%Coloring
+	backgroundcolor=\color{lightgray},
+	morekeywords={BooleanExpression},
+	alsoletter={:,<,>,/,?},
+	morestring=[b]{"},
+	morecomment=[s]{<!--}{-->},keywordstyle=\color{forestGreen},
+	identifierstyle=\color{blue}\ttfamily,
+	stringstyle=\color{orangeRed}\ttfamily,
+	commentstyle=\color{forestGreen}\ttfamily
+}
+ 
+ 
+\lstnewenvironment{workflow-code}[2]{
+	\lstset{caption=#1,label=#2,style=workflowStyle}
+}{}
+
+
+
+
+
+\begin{document}
+
+\include{title}
+
+\include{contents}
+
+\input{about}
+
+\input{running}
+
+\input{interface}
+
+\input{files}
+
+\input{examples}
+
+\input{api}
+
+
+
+%\bibliographystyle{apalike}
+%\bibliography{bib}
+
+
+\end{document}

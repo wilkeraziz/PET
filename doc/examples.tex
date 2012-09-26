@@ -1,0 +1,36 @@
+\chapter{Examples}
+
+\section{LREC/EAMT-demo version}
+
+If you download the \href{http://pers-www.wlv.ac.uk/~in1676/resources/pet/workspaces.html}{LREC/EAMT-2012 workspace} you will find a few examples of {\tt .pec} and {\tt .pej} files.
+
+You may place the workspace {\tt lrec} and the meta file {\tt pec.meta} in the tool's root directory or you can place the workspace {\tt lrec} wherever you prefer and set the variable {\tt dir} in your tool's {\tt pec.meta} to the location you chose.
+
+If you use the provided {\tt pec.meta} you will notice that it sets:
+
+\begin{description}
+	\setlength\itemindent{0.5cm}  
+	\item[\param{dir}{lrec}]
+	\item[\param{default}{en-pt-typical.pec}]
+\end{description}
+
+The directory {\tt lrec} contains 5 examples of context files:
+
+\begin{enumerate}
+	\item {\tt en-pt-typical.pec} comes with a typical setup in which future units are hidden;
+	\item {\tt en-es-wmt.pec} mixes HT and PE tasks and it's focused on gathering post-editing time, no explicit assessment is requested;
+	\item {\tt fapesp.pec} renders the bitext as HTML and presents the whole text in a single unit;
+	\item {\tt fapesp-mono.pec} renders only the target text (as HTML) in a single unit;
+	\item {\tt subs.pec} sets a task with general and external info as well as length constraints;
+\end{enumerate}
+
+The directory {\tt lrec} also contains 4 users (sub-directories) which contain examples of input files ({\tt .pej}):
+
+\begin{enumerate}
+	\item {\tt fapesp} check this one for an example with HTML
+	\item {\tt std}
+	\item {\tt subs} check this one for examples with length constraints and additional attributes for units
+	\item {\tt wmt}
+\end{enumerate}
+
+Finally there is a directory called {\tt xml} that contains XML databases with external information.

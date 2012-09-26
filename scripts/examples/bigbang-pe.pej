@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<job id="bigbang-pe">
+  <task type="pe" id="1">
+    <S producer="en-opus">My brother-- he's got a big crush on Bernadette.</S>
+    <R producer="pt-opus">Meu irmão... está apaixonado por Bernadette.</R>
+    <MT producer="baseline">meu irmão tem uma quedinha por Bernadette . </MT>
+    <MT producer="google">Meu irmão - ele tem uma grande paixão por Bernadette.</MT>
+    <MT producer="bing">Meu irmão - ele tem uma grande paixão por Bernadette.</MT>
+  </task>
+  <task type="pe" id="2">
+    <S producer="en-opus">You're moving back to India?</S>
+    <R producer="pt-opus">Está voltando para a Índia?</R>
+    <MT producer="baseline">vais voltar para Índia ? </MT>
+    <MT producer="google">Você está voltando para a Índia?</MT>
+    <MT producer="bing">Você está voltando para a Índia?</MT>
+  </task>
+  <task type="pe" id="3">
+    <S producer="en-opus">It's-It's not what it looks like.</S>
+    <R producer="pt-opus">Não é o que parece.</R>
+    <MT producer="baseline">não é o que parece . </MT>
+    <MT producer="google">É-Não é o que parece.</MT>
+    <MT producer="bing">It's-It é não o que parece.</MT>
+  </task>
+  <task type="pe" id="4">
+    <S producer="en-opus">It's not what it looks like.</S>
+    <R producer="pt-opus">Não é o que parece.</R>
+    <MT producer="baseline">não é o que parece . </MT>
+    <MT producer="google">Não é o que parece.</MT>
+    <MT producer="bing">É não o que parece.</MT>
+  </task>
+  <task type="pe" id="5">
+    <S producer="en-opus">It's not what it looks like.</S>
+    <R producer="pt-opus">Não é o que parece.</R>
+    <MT producer="baseline">não é o que parece . </MT>
+    <MT producer="google">Não é o que parece.</MT>
+    <MT producer="bing">É não o que parece.</MT>
+  </task>
+  <task type="pe" id="6">
+    <S producer="en-opus">What are you grinding about?</S>
+    <R producer="pt-opus">O que você está remoendo?</R>
+    <MT producer="baseline">o que está rangendo ? </MT>
+    <MT producer="google">O que você está moendo aproximadamente?</MT>
+    <MT producer="bing">O que é você moagem sobre?</MT>
+  </task>
+  <task type="pe" id="7">
+    <S producer="en-opus">Penny's brain teaser this morning.</S>
+    <R producer="pt-opus">A charada da Penny, esta manhã.</R>
+    <MT producer="baseline">Penny está pergunta dificílima esta manhã . </MT>
+    <MT producer="google">Provocação de Penny cérebro esta manhã.</MT>
+    <MT producer="bing">Teaser de cérebro de Penny esta manhã.</MT>
+  </task>
+  <task type="pe" id="8">
+    <S producer="en-opus">She and Koothrappali</S>
+    <R producer="pt-opus">Ela e Koothrappali</R>
+    <MT producer="baseline">ela e Koothrappali </MT>
+    <MT producer="google">Ela e Koothrappali</MT>
+    <MT producer="bing">Ela e Koothrappali</MT>
+  </task>
+  <task type="pe" id="9">
+    <S producer="en-opus">emerge from your bedroom.</S>
+    <R producer="pt-opus">saem seu quarto.</R>
+    <MT producer="baseline">sair do seu quarto . </MT>
+    <MT producer="google">emergir de seu quarto.</MT>
+    <MT producer="bing">emergem de seu quarto.</MT>
+  </task>
+  <task type="pe" id="10">
+    <S producer="en-opus">She is disheveled, and Raj is dressed only in a sheet.</S>
+    <R producer="pt-opus">Ela está desalinhada, e Raj vestindo apenas um lençol.</R>
+    <MT producer="baseline">ela é desordenado e Raj está vestindo . </MT>
+    <MT producer="google">Ela é desgrenhado, e Raj está vestida apenas com um lençol.</MT>
+    <MT producer="bing">Ela é desalinho e Raj está vestida apenas com uma folha.</MT>
+  </task>
+</job>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<job id="bigbang">
+  <task type="pe" id="1">
+    <S producer="opus">My brother-- he's got a big crush on Bernadette.</S>
+    <R producer="opus">Meu irmão... está apaixonado por Bernadette.</R>
+    <MT producer="baseline">meu irmão tem uma quedinha por Bernadette . </MT>
+  </task>
+  <task type="pe" id="2">
+    <S producer="opus">You're moving back to India?</S>
+    <R producer="opus">Está voltando para a Índia?</R>
+    <MT producer="baseline">vais voltar para Índia ? </MT>
+  </task>
+  <task type="pe" id="3">
+    <S producer="opus">It's-It's not what it looks like.</S>
+    <R producer="opus">Não é o que parece.</R>
+    <MT producer="baseline">não é o que parece . </MT>
+  </task>
+  <task type="pe" id="4">
+    <S producer="opus">It's not what it looks like.</S>
+    <R producer="opus">Não é o que parece.</R>
+    <MT producer="baseline">não é o que parece . </MT>
+  </task>
+  <task type="pe" id="5">
+    <S producer="opus">It's not what it looks like.</S>
+    <R producer="opus">Não é o que parece.</R>
+    <MT producer="baseline">não é o que parece . </MT>
+  </task>
+  <task type="pe" id="6">
+    <S producer="opus">What are you grinding about?</S>
+    <R producer="opus">O que você está remoendo?</R>
+    <MT producer="baseline">o que está rangendo ? </MT>
+  </task>
+  <task type="pe" id="7">
+    <S producer="opus">Penny's brain teaser this morning.</S>
+    <R producer="opus">A charada da Penny, esta manhã.</R>
+    <MT producer="baseline">Penny está pergunta dificílima esta manhã . </MT>
+  </task>
+  <task type="pe" id="8">
+    <S producer="opus">She and Koothrappali</S>
+    <R producer="opus">Ela e Koothrappali</R>
+    <MT producer="baseline">ela e Koothrappali </MT>
+  </task>
+  <task type="pe" id="9">
+    <S producer="opus">emerge from your bedroom.</S>
+    <R producer="opus">saem seu quarto.</R>
+    <MT producer="baseline">sair do seu quarto . </MT>
+  </task>
+  <task type="pe" id="10">
+    <S producer="opus">She is disheveled, and Raj is dressed only in a sheet.</S>
+    <R producer="opus">Ela está desalinhada, e Raj vestindo apenas um lençol.</R>
+    <MT producer="baseline">ela é desordenado e Raj está vestindo . </MT>
+  </task>
+</job>

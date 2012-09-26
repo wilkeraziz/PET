@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<job id="bigbang-ht-3">
+  <task type="ht" id="1">
+    <S producer="en-opus">My brother-- he's got a big crush on Bernadette.</S>
+    <S producer="en-google">My brother ... is in love with Bernadette.</S>
+  </task>
+  <task type="ht" id="2">
+    <S producer="en-opus">You're moving back to India?</S>
+    <S producer="en-google">Is coming to India?</S>
+  </task>
+  <task type="ht" id="3">
+    <S producer="en-opus">It's-It's not what it looks like.</S>
+    <S producer="en-google">It is not what it seems.</S>
+  </task>
+  <task type="ht" id="4">
+    <S producer="en-opus">It's not what it looks like.</S>
+    <S producer="en-google">It is not what it seems.</S>
+  </task>
+  <task type="ht" id="5">
+    <S producer="en-opus">It's not what it looks like.</S>
+    <S producer="en-google">It is not what it seems.</S>
+  </task>
+  <task type="ht" id="6">
+    <S producer="en-opus">What are you grinding about?</S>
+    <S producer="en-google">What are you brooding?</S>
+  </task>
+  <task type="ht" id="7">
+    <S producer="en-opus">Penny's brain teaser this morning.</S>
+    <S producer="en-google">The riddle of Penny this morning.</S>
+  </task>
+  <task type="ht" id="8">
+    <S producer="en-opus">She and Koothrappali</S>
+    <S producer="en-google">She and Koothrappali</S>
+  </task>
+  <task type="ht" id="9">
+    <S producer="en-opus">emerge from your bedroom.</S>
+    <S producer="en-google">leave your room.</S>
+  </task>
+  <task type="ht" id="10">
+    <S producer="en-opus">She is disheveled, and Raj is dressed only in a sheet.</S>
+    <S producer="en-google">She is disheveled and wearing only a sheet Raj.</S>
+  </task>
+</job>
