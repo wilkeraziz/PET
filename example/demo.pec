@@ -1,0 +1,139 @@
+# PET example config file
+
+# please report bugs to wilker.aziz@gmail.com
+
+# The workspace is the directory where everything happens
+workspace=demo
+user=A1
+
+# Source language
+source=en
+
+# Target language
+target=es
+
+# You may want to automatically save progress
+#autoSave
+
+# You may want to change the annotation page
+# how many sentences get displayed
+sentencesByPage=9
+
+# hide the bottom pane to get more space
+hideBottomPane
+
+# show target sentences on the left-hand side and source sentences on the right-hand side
+#displayTS
+
+# enable blind post-editing, that is, show only the machine translations
+#blindPE
+
+# You can set assessment options for translation and post-editing tasks
+# T) Translation
+#translationAssessment=id|question|maxAnswers[|assessments]{2,}
+translationAssessment=difficulty|How hard was to translate the source?|1|1. Easy|2. Regular|3. Difficult
+translationAssessment=issues|Highlight some issues of this unit|*|1. Rare words|2. Passive voice|3. Semantic ambiguity
+
+# PE) Post-Editing
+#postEditingAssessment=id|question|maxAnswers[|assessments]{2,}
+postEditingAssessment=necessity|How much post-editing was necessary to fix the translation?|1|4. No modification was performed|3. A little post editing wasneeded to fix small problems|2. A lot of post editing was needed (but it was still quicker than retranslation)|1. It required complete retranslation
+# You may set more than one question: they will be shown in order
+postEditingAssessment=accuracy|How accurate was the MT?|1|0|1|2|3|4
+# You may present multiple questions per page
+assessmentsByPage=2
+
+# You can disable assessments switching on the following flag:
+disableAssessment
+# Assessments come with optional comments, you may disable them
+#disableCommentOnAssessment
+
+# You can set how the current job is rendered:
+# i) you can hide the current job while the user is not working on it
+#hideIfNotEditing=always
+# ii) you can hide the current job if never done
+#hideIfNotEditing=undone
+# iii) you may want to never hide
+hideIfNotEditing=never
+
+# You can extend the scope of this option to all units on the screen
+#applyHideIfNotEditingToAll
+
+# While the job is hidden you can display a message
+# i) never done jobs
+editableMessageUndone=Click here to start ...
+# ii) at least once finished jobs
+editableMessageDone=Click here to redo ...
+
+# You may render HTML
+#renderHTML
+
+# You may want to changes fonts
+standardFont=times,12
+editingFont=times,12
+editableFont=times,12
+
+# You may want to display a reference translation
+#showReference
+
+# You may want to display the id of the tasks
+#showSentenceId
+#idFont=times,8
+
+# You may want to display the producer of each unit
+#showProducers
+
+# You may want to enable the user to accept the MT
+#enableAutoAccept
+
+# You may want to enable the user to discard the segment (tag it as impossible to be post-edited)
+#enableDiscard
+#back compatible with enableImpossible
+
+# Usually you will want to skip the assessment of two special cases: auto-accept and discard
+skipAssessmentOnAutoAccept
+skipAssessmentOnDiscard
+# if you don't, just comment these two lines above out
+
+# For very specific uses of the tool you may want to prevent the user from editing =O
+#blockEditing
+
+# You may want to disable the ability of outputing a time stamp in the result file
+hideOutputTimeStampCheckBox
+
+# You may want to output the timestamp
+#outputTimeStamp
+
+# You may want to collect some automatic feedback
+enableKeystrokes
+enableUnchanged
+
+# You may want to give the user additional information
+# additional info is given via the task's attributes or the special tag <info>
+#generalInfo=attribute[,color]
+#generalInfoFont=font[,size]
+#externalTargetInfo=file
+# You may want to specify some parameters
+#externalSourceInfoMinOrder=2
+#externalSourceInfoMaxOrder=4
+#externalSourceInfoMinLength=5
+#externalTargetInfoMinOrder=1
+#externalTargetInfoMaxOrder=3
+#externalTargetInfoMinLength=4
+#externalTargetInfoNoLonger
+#externalSourceInfoNoLonger
+
+#externalTargetInfo=../xml/europarl.es-es.xml
+
+# You may want to load monolingual and bilingual dictionaries
+#s2s=file
+#s2t=../xml/fapesp-ibm1.es-en.xml
+#t2t=../xml/europarl.es-es.xml
+#t2s=file
+# You may want to activate length constraints
+# by giving the name of 3 attributes that should be interpreted as the following
+#lengthConstraints=ideal,preferable,max
+
+# You may want to log all the changes
+trackChanges
+# If you can think of a useful parameter please let me know: wilker.aziz@gmail.com
+hideLeftBar
