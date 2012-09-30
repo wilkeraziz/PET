@@ -1,10 +1,10 @@
 # PET
 
-Post-Editing Tool
+Post-Editing Tool.
 
 ## Build
 
-1. ant compile jar
+1. ant compile jar javadoc
 
 ## Usage
 
@@ -32,3 +32,7 @@ Overloading pec.meta:
     For an example:
 
         ./pej.bat -id example-job -pej example/demo/A1/example-job -s example/plain/source.txt europarl -R example/plain/pe.txt example/plain/pe.attr -T example/plain/target.txt example/plain/target.attr -units example/plain/units.attr -Dwhy=showing-how-to
+
+3. API
+
+    pet.pej.PEJBuilder

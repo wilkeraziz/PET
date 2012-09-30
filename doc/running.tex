@@ -1,8 +1,24 @@
 \chapter{Running}
 
-\section{How to install}
+\section{Downloading}
 
-No installation is required. Once you unzip the PET file, \PET only requires a recent version of the Java Virtual Machine (\verb!1.6.0_26! or superior), which is likely to be already installed if you keep your machine up to date. 
+You can download PET already built and with a bunch of example files from \url{http://pers-www.wlv.ac.uk/~in1676/pet}.
+This version is usually slightly customized and if just want to try PET out this is probably what you are looking for. After downloading you can start using it almost directly (check Section \ref{sec:requirements}).
+
+You can also git clone the code, specially if you intend to contribute:
+
+\begin{lstlisting}[style=BashStyle]
+git clone https://github.com/wilkeraziz/PET.git
+\end{lstlisting}
+
+In this case you will need to build it before using (see Section \ref{sec:building}).
+
+\section{Requirements}\label{sec:requirements}
+
+\PET only requires a recent version of the Java Virtual Machine (\verb!1.6.0_26! or superior), which is likely to be already installed if you keep your machine up to date. 
+
+If you have downloaded this from \url{http://pers-www.wlv.ac.uk/~in1676/pet}, no building is required, keep following this section then go to Section \ref{sec:run}.
+If you git cloned the code, check Section \ref{sec:building}, then proceed with this one.
 
 On Microsoft Windows it is important to check whether the PATH to the Java binary files is properly set. Again, this may be already set. If you try to run the tool \ref{run} and it does not work, follow the guidelines in Section \ref{sec:win} to set the path.
 
@@ -109,7 +125,19 @@ On Microsoft Windows it is important to check whether the PATH to the Java binar
 \end{enumerate}
 
 
-\section{How to run}\label{run}
+\section{Building}\label{sec:building}
+
+This is only necessary if you git cloned the code. Use \href{http://ant.apache.org/}{ant} to build \PET. After cloning the code, enter its directory and run:
+
+\begin{lstlisting}[style=BashStyle]
+ant compile jar javadoc
+\end{lstlisting}
+
+This will produce the directories \texttt{build}, \texttt{dist} and \texttt{dist/javadoc}.
+You are probably ready to run \PET now (see Section \ref{sec:run}).
+
+
+\section{How to run}\label{sec:run}
 
 Simply execute the file {\tt run.bat}.
 On Windows double clicking the file will be enough.

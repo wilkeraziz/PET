@@ -31,7 +31,7 @@ import pet.pej.PEJSegment.SegmentType;
 
 /**
  * This builder should be used for generating a single PEJ.
- * That is, you should instanciate a different builder to build a different PEJ.
+ * That is, you should instantiate a different builder to build a different PEJ.
  * 
  * You can add customized units using addUnit or you can load data from plain text files
  * following the convetion "one segment per line".

@@ -358,13 +358,13 @@ A file is called a ``job'' and it is identified by an ``id'' field (see Listing 
 </job>
 \end{workflow-code}
 
-A job is made of ``units\footnote{There is a mismatch between this document and the XML tag. The XML tag used to declare a unit is ``task'' due to an earlier version of the software. This mismatch is being corrected both in the code and in the input/output files. We use ``unit'' throughout this document as it is clearer.}'' that can be either for human translation (HTs) or for post-editing (PEs) (see Listing \ref{lst:unit}).
+A job is made of ``units\footnote{In older versions of PET the XML tag used to declare a unit was ``task''. This mismatch is being corrected both in the code and in the input/output files. We use ``unit'' throughout this document as it is clearer. For while PET will recognize the tags ``task'' and ``unit'' as synonyms.}'' that can be either for human translation (HTs) or for post-editing (PEs) (see Listing \ref{lst:unit}).
 A unit is identified by a unique number and it must be either a translation from scratch (ht) or a post-editing (pe). In PE units at least one translation (MT) is expected.
 Multiple sources (S), references (R) and machine translations (MT) may be given. They should be assigned ``producers'' to identify the origin of the text. They can be assigned scores (for example, confidence/quality estimation scores).
 
 \begin{workflow-code}{\PET's input file - ``units''}{lst:unit}
 <!-- A PE task -->
-<task id="1" type="pe"> 
+<unit id="1" type="pe"> 
 	<S producer="manual-transcription"> 
 		<!-- ... -->
 	</S>
@@ -380,13 +380,13 @@ Multiple sources (S), references (R) and machine translations (MT) may be given.
 	<MT producer="system2" score="5">
 		<!-- ... -->
 	</MT>
-</task>
+</unit>
 <!-- A HT task -->
-<task id="2" type="ht"> 
+<unit id="2" type="ht"> 
 	<S producer="manual-transcription"> 
 		<!-- ... -->
 	</S>
-</task>
+</unit>
 \end{workflow-code}
 
 Jobs, units and sentences can have additional attributes that may or may not be used depending on advanced features of the tool (Listing \ref{lst:attributes}).
@@ -399,7 +399,7 @@ Jobs, units and sentences can have additional attributes that may or may not be 
      last="50"
      id="greys.08x06.v1-v1.en-br.s2.1"
      meta="/home/waziz/experiments/opus/google/mt/greys.08x06.v1-v1.en-br.original-meta">
-  <task ratio="17.3333"
+  <unit ratio="17.3333"
         max="80"
         lines="1"
         duration="1.5100"
@@ -411,8 +411,8 @@ Jobs, units and sentences can have additional attributes that may or may not be 
         preferable="26">
     <S producer="opus">That's it, Fran. One more push.</S>
     <MT producer="s2" score="0.6">E isso ai, Fran. Mais um empurrao.</MT>
-  </task>
-  <task ratio="16.3636"
+  </unit>
+  <unit ratio="16.3636"
         max="80"
         lines="1"
         duration="2.0000"
@@ -423,7 +423,7 @@ Jobs, units and sentences can have additional attributes that may or may not be 
         ideal="30"
         preferable="24">
     <S producer="opus">As babies, we were easy.</S>
-  </task>
+  </unit>
   <!-- ... -->
  \end{workflow-code}
 %\fixme{vai falar de ler texto HTML?}
@@ -472,7 +472,7 @@ In a {\tt .per} file, the job is tagged with its status and progress, units are 
 
 \begin{workflow-code}{\PET's output file}{lst:per}
 <job id="bigbang-pe-2" progress="1/10" status="GOING_ON">
-	<task id="1" status="FINISHED" type="pe">
+	<unit id="1" status="FINISHED" type="pe">
 	<S producer="en-opus">My brother-- he's got a big crush on Bernadette.</S>
 	<R producer="pt-opus">Meu irmao... esta apaixonado por Bernadette.</R>
 	<MT producer="baseline">meu irmao tem uma quedinha por Bernadette .</MT>
@@ -488,7 +488,7 @@ In a {\tt .per} file, the job is tagged with its status and progress, units are 
 			<!-- effort indicators ... -->
 		</annotation>
 	</annotations>
-	</task>
+	</unit>
 	<!-- ... -->
 </job>
 \end{workflow-code}
@@ -499,7 +499,7 @@ Listing \ref{lst:indicators} shows the output with explict and implicit effort i
 
 \begin{workflow-code}{\PET's output file}{lst:indicators}
 <job id="bigbang-pe-2" progress="1/10" status="GOING_ON">
-  <task id="1" status="FINISHED" type="pe">
+  <unit id="1" status="FINISHED" type="pe">
     <S producer="en-opus">My brother-- he's got a big crush on Bernadette.</S>
     <R producer="pt-opus">Meu irmao... esta apaixonado por Bernadette.</R>
     <MT producer="baseline">meu irmao tem uma crush por Bernadette .</MT>
@@ -549,7 +549,7 @@ Listing \ref{lst:indicators} shows the output with explict and implicit effort i
         <indicator elapsed=",0" id="insertion" length="1" offset="41" t0="48s,848" type="change">.</indicator>
       </annotation>
     </annotations>
-  </task>
+  </unit>
 \end{workflow-code}
 
 \section{External Information}\label{sec:external}

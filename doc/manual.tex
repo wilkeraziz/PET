@@ -29,6 +29,7 @@
 \newcommand{\fixme}[1]{{\bf \color{red} [*FIXME* }{\em #1}{\bf \color{red} ]}}
 \newcommand{\fixed}[1]{{\bf \color{blue} [*FIXED?* }{\em #1}{\bf \color{blue} ]}}
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
 \newcommand{\PET}{\textsc{PET}\xspace}
 \newcommand{\PEJ}{\textsc{PEJ}\xspace}
 \newcommand{\rel}[1]{{\it #1}}
@@ -43,6 +44,20 @@
 \definecolor{darkgray}{rgb}{.4,.4,.4}
 \definecolor{forestGreen}{RGB}{34,139,34}
 \definecolor{orangeRed}{RGB}{255,69,0}
+
+\lstdefinestyle{BashStyle}{
+  language=bash,
+  basicstyle=\small\sffamily,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=3pt,
+  frame=tb,
+  columns=fullflexible,
+  backgroundcolor=\color{yellow!20},
+  linewidth=0.9\linewidth,
+  xleftmargin=0.1\linewidth
+}
+
  
 
 \lstdefinelanguage{xml}{
