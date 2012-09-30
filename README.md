@@ -4,7 +4,7 @@ Post-Editing Tool.
 
 ## Build
 
-1. ant compile jar javadoc
+    ant compile jar javadoc
 
 ## Usage
 
@@ -21,7 +21,7 @@ Overloading pec.meta:
 
 1. Graphical interface
 
-    ./pej.bat
+        ./pej.bat
 
 2. Command line interface
 
@@ -35,4 +35,4 @@ Overloading pec.meta:
 
 3. API
 
-    pet.pej.PEJBuilder
+        pet.pej.PEJBuilder
