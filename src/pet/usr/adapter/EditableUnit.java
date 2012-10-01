@@ -213,6 +213,7 @@ public class EditableUnit implements pet.annotation.Unit {
 
             this.events = new ArrayList<PETEvent>();
             this.interpreters =  new ArrayList<EventInterpreter>();
+            this.interpreters.add(new FlowInterpreter(ContextHandler.assessing()));
             if (ContextHandler.keystrokes()){
                 this.interpreters.add(new KeystrokeInterpreter());
             }
@@ -221,6 +222,13 @@ public class EditableUnit implements pet.annotation.Unit {
         @Override
         public void treat(final PETEvent event) {
             events.add(event);
+            if (event instanceof PETFlowEvent){
+                if (((PETFlowEvent)event).getAction() == PETFlowEvent.ActionType.EDITING_START){
+                    status = StatusAdapter.STARTED;
+                    startLogging();
+                }
+            }
+            
         }
 
         public void publishListeners() {
@@ -280,10 +288,9 @@ public class EditableUnit implements pet.annotation.Unit {
                 final List<AssessmentChoice> assessments) {
             stopLogging();
             final List<EffortIndicator> indicators = new ArrayList<EffortIndicator>(2);
-            indicators.add(new TimeEffortIndicator("editing", new Period(editingStartTime, editingEndTime)));
             final List<Assessment> assessmentList = new ArrayList<Assessment>(assessments.size());
             if (ContextHandler.assessing()) {
-                indicators.add(new TimeEffortIndicator("assessing", new Period(assessingStartTime, assessingEndTime)));
+                //indicators.add(new TimeEffortIndicator("assessing", new Period(assessingStartTime, assessingEndTime)));
                 for (final AssessmentChoice chosen : assessments) {
                     assessmentList.add(new StringAssessment(chosen));
                 }
@@ -416,32 +423,33 @@ public class EditableUnit implements pet.annotation.Unit {
 
         @Override
         public void treat(final Signal signal) {
-            if (!logging) {
-                if (signal == SignalAdapter.EDITING_START) {
-                    status = StatusAdapter.STARTED;
-                    editingStartTime = new DateTime(System.currentTimeMillis());
-                    startLogging();
-                    return;
-                }
-                return;
-            }
+            //if (!logging) {
+            //    if (signal == SignalAdapter.EDITING_START) {
+            //        status = StatusAdapter.STARTED;
+            //        editingStartTime = new DateTime(System.currentTimeMillis());
+            //        startLogging();
+            //        return;
+            //    }
+            //    return;
+            //}
             if (signal == SignalAdapter.DONE) {
                 status = StatusAdapter.FINISHED;
                 return;
             }
 
-            if (signal == SignalAdapter.EDITING_END) {
-                editingEndTime = new DateTime(System.currentTimeMillis());
-                return;
-            }
-            if (signal == SignalAdapter.ASSESSING_START) {
-                assessingStartTime = new DateTime(System.currentTimeMillis());
-                return;
-            }
-            if (signal == SignalAdapter.ASSESSING_END) {
-                assessingEndTime = new DateTime(System.currentTimeMillis());
-                return;
-            }
+            //if (signal == SignalAdapter.EDITING_END) {
+            //    editingEndTime = new DateTime(System.currentTimeMillis());
+            //    return;
+            //}
+            //if (signal == SignalAdapter.ASSESSING_START) {
+            //    assessingStartTime = new DateTime(System.currentTimeMillis());
+            //    return;
+            //}
+            
+            //if (signal == SignalAdapter.ASSESSING_END) {
+            //    assessingEndTime = new DateTime(System.currentTimeMillis());
+            //    return;
+            //}
             
             if (signal == SignalAdapter.UNNECESSARY) {
                 unnecessary = true;
@@ -465,15 +473,15 @@ public class EditableUnit implements pet.annotation.Unit {
 
         @Override
         public void treat(final Signal signal, final SignalPackage pack) {
-            if (!logging) {
-                if (signal == SignalAdapter.EDITING_START) {
-                    status = StatusAdapter.STARTED;
-                    editingStartTime = new DateTime(System.currentTimeMillis());
-                    startLogging();
-                    return;
-                }
-                return;
-            }
+            //if (!logging) {
+            //    if (signal == SignalAdapter.EDITING_START) {
+            //        status = StatusAdapter.STARTED;
+            //        editingStartTime = new DateTime(System.currentTimeMillis());
+            //        startLogging();
+            //        return;
+            //    }
+            //    return;
+            //}
             if (signal == SignalAdapter.TEXT_INSERTION) {
                 final ChangeSignalPackage change = (ChangeSignalPackage) pack;
                 changes.add(ChangeEffortIndicator.getInsertion(change.getOffset(),

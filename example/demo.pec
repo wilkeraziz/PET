@@ -32,18 +32,18 @@ hideBottomPane
 # T) Translation
 #translationAssessment=id|question|maxAnswers[|assessments]{2,}
 translationAssessment=difficulty|How hard was to translate the source?|1|1. Easy|2. Regular|3. Difficult
-translationAssessment=issues|Highlight some issues of this unit|*|1. Rare words|2. Passive voice|3. Semantic ambiguity
+#translationAssessment=issues|Highlight some issues of this unit|*|1. Rare words|2. Passive voice|3. Semantic ambiguity
 
 # PE) Post-Editing
 #postEditingAssessment=id|question|maxAnswers[|assessments]{2,}
-postEditingAssessment=necessity|How much post-editing was necessary to fix the translation?|1|4. No modification was performed|3. A little post editing wasneeded to fix small problems|2. A lot of post editing was needed (but it was still quicker than retranslation)|1. It required complete retranslation
+#postEditingAssessment=necessity|How much post-editing was necessary to fix the translation?|1|4. No modification was performed|3. A little post editing wasneeded to fix small problems|2. A lot of post editing was needed (but it was still quicker than retranslation)|1. It required complete retranslation
 # You may set more than one question: they will be shown in order
 postEditingAssessment=accuracy|How accurate was the MT?|1|0|1|2|3|4
 # You may present multiple questions per page
 assessmentsByPage=2
 
 # You can disable assessments switching on the following flag:
-disableAssessment
+#disableAssessment
 # Assessments come with optional comments, you may disable them
 #disableCommentOnAssessment
 

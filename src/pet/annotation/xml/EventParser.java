@@ -7,7 +7,9 @@ package pet.annotation.xml;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import pet.signal.PETCommandEvent;
+import pet.signal.PETEditOperationEvent;
 import pet.signal.PETEvent;
+import pet.signal.PETFlowEvent;
 import pet.signal.PETKeystrokeEvent;
 import pet.signal.PETNavigationEvent;
 import pet.signal.PETTextChangeEvent;
@@ -35,6 +37,10 @@ public class EventParser {
             return new PETTextChangeEvent(xml);
         } else if (type.equals(PETKeystrokeEvent.TYPE)) {
             return new PETKeystrokeEvent(xml);
+        } else if (type.equals(PETEditOperationEvent.TYPE)){
+            return new PETEditOperationEvent(xml);
+        } else if (type.equals(PETFlowEvent.TYPE)){
+            return new PETFlowEvent(xml);
         } else {
             System.err.println("Skipping unknown event: " + type);
         }

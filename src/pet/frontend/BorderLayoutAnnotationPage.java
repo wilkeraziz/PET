@@ -70,6 +70,7 @@ import pet.frontend.util.WaitingUntilPostEditingStarts;
 import pet.io.XMLJobWriter;
 import pet.signal.PETCommandEvent;
 import pet.signal.PETEditOperationEvent;
+import pet.signal.PETFlowEvent;
 import pet.signal.PETKeystrokeEvent;
 import pet.signal.PETNavigationEvent;
 import pet.signal.SignalAdapter;
@@ -901,10 +902,12 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
     }
 
     private void getAssessment(final EditableUnit snapshot) {
-        ContextHandler.signalManager().fire(SignalAdapter.EDITING_END);
+        //ContextHandler.signalManager().fire(SignalAdapter.EDITING_END);
+        ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.EDITING_END));
 
         if (ContextHandler.assessing()) {
-            ContextHandler.signalManager().fire(SignalAdapter.ASSESSING_START);
+            //ContextHandler.signalManager().fire(SignalAdapter.ASSESSING_START);
+            ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.ASSESSING_START));
             assessments = new ArrayList<AssessmentChoice>();
             final int assessmentsByPage = ContextHandler.assessmentsByPage();
             /*if (assessmentsByPage == 1) {
@@ -936,7 +939,8 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
                 dialog.setVisible(true);
             }
             // }
-            ContextHandler.signalManager().fire(SignalAdapter.ASSESSING_END);
+            //ContextHandler.signalManager().fire(SignalAdapter.ASSESSING_END);
+            ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.ASSESSING_END));
         } else {
             skipAssessment();
         }
@@ -944,7 +948,8 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
     }
 
     private void skipAssessment() {
-        ContextHandler.signalManager().fire(SignalAdapter.EDITING_END);
+        //ContextHandler.signalManager().fire(SignalAdapter.EDITING_END);
+        ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.EDITING_END));
         assessments = Collections.emptyList();
     }
 

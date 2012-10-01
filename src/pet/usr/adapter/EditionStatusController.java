@@ -25,6 +25,7 @@ import pet.config.ContextHandler;
 import pet.frontend.EditingStatusProvider;
 import pet.frontend.FacadeController;
 import pet.frontend.components.UnitGUI;
+import pet.signal.PETFlowEvent;
 import pet.signal.SignalAdapter;
 
 /**
@@ -179,7 +180,8 @@ public class EditionStatusController implements EditingStatusProvider {
             clock.resetGettingTime();
             unit.activate();
             //updateCurrentFacade(true);
-            ContextHandler.signalManager().fire(SignalAdapter.EDITING_START);
+            //ContextHandler.signalManager().fire(SignalAdapter.EDITING_START);
+            ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.EDITING_START));
             
         }
     }
@@ -349,7 +351,7 @@ public class EditionStatusController implements EditingStatusProvider {
         }
     }
 
-    //TODO
+    /*
     @Deprecated
     public void tagCurrentTaskAsImpossible() {
         final EditableUnit task = (EditableUnit) taskSelector.getEditingUnit();
@@ -357,12 +359,13 @@ public class EditionStatusController implements EditingStatusProvider {
             final DateTime time = new DateTime(System.currentTimeMillis());
             if (task.getStatus() != StatusAdapter.STARTED) {
                 ContextHandler.signalManager().fire(SignalAdapter.EDITING_START);
+                ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.EDITING_START));
                 //task.startEdition(time);
             }
             // task.tagAsImpossible();
             //done(task.getOriginalTarget().toString(), new ArrayList<String>(), "");
         }
-    }
+    }*/
 
     public EditableUnit getEditingTask() {
         return (EditableUnit) taskSelector.getEditingUnit();
