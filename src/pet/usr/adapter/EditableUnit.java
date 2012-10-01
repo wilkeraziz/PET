@@ -187,13 +187,7 @@ public class EditableUnit implements pet.annotation.Unit {
         private DateTime editingEndTime;
         private DateTime assessingStartTime;
         private DateTime assessingEndTime;
-        private int keystrokes;
-        private int white;
-        private int symbol;
-        private int navigation;
-        private int commands;
-        private int alphanum;
-        private int erase;
+        
         private boolean logging;
         private boolean autoaccept;
         private boolean impossible;
@@ -204,9 +198,10 @@ public class EditableUnit implements pet.annotation.Unit {
         private final List<EffortIndicator> actions;
         private final boolean compactLog = true;
         private final List<PETEvent> events;
+        
+        private final List<EventInterpreter> interpreters; // TODO: make it customizable
 
         private SignalHandler(final Status status) {
-            keystrokes = 0;
             impossible = false;
             unnecessary = false;
             unchanged = false;
@@ -217,6 +212,10 @@ public class EditableUnit implements pet.annotation.Unit {
             this.logging = false;
 
             this.events = new ArrayList<PETEvent>();
+            this.interpreters =  new ArrayList<EventInterpreter>();
+            if (ContextHandler.keystrokes()){
+                this.interpreters.add(new KeystrokeInterpreter());
+            }
         }
 
         @Override
@@ -289,15 +288,7 @@ public class EditableUnit implements pet.annotation.Unit {
                     assessmentList.add(new StringAssessment(chosen));
                 }
             }
-            if (ContextHandler.keystrokes()) {
-                indicators.add(new CountEffortIndicator("keystrokes", keystrokes));
-                indicators.add(new CountEffortIndicator("alphanum-keystyped", alphanum));
-                indicators.add(new CountEffortIndicator("white-keystyped", white));
-                indicators.add(new CountEffortIndicator("symbols-keystyped", symbol));
-                indicators.add(new CountEffortIndicator("navigation-keystyped", navigation));
-                indicators.add(new CountEffortIndicator("cmd-keystyped", commands));
-                indicators.add(new CountEffortIndicator("erase-keystyped", erase));
-            }
+            
             if (ContextHandler.autoAccept()) {
                 indicators.add(new FlagEffortIndicator("autoaccept", autoaccept));
             }
@@ -401,27 +392,29 @@ public class EditableUnit implements pet.annotation.Unit {
                 }
             }
 
+            
+            for (final EventInterpreter interpreter : this.interpreters){
+                indicators.addAll(interpreter.interpret(events));
+            }
+            
             final UnitResult result = new UnitResultAdapter(incomplete,
                     indicators,
                     assessmentList,
                     events);
 
             events.clear();
-            keystrokes = 0;
+            
             impossible = false;
             unchanged = false;
             unnecessary = false;
-            white = 0;
-            symbol = 0;
-            navigation = 0;
-            commands = 0;
-            alphanum = 0;
-            erase = 0;
 
 
             return result;
         }
+        
+       
 
+        @Override
         public void treat(final Signal signal) {
             if (!logging) {
                 if (signal == SignalAdapter.EDITING_START) {
@@ -449,34 +442,7 @@ public class EditableUnit implements pet.annotation.Unit {
                 assessingEndTime = new DateTime(System.currentTimeMillis());
                 return;
             }
-            if (signal == SignalAdapter.KEYSTROKE) {
-                keystrokes++;
-                return;
-            }
-            if (signal == SignalAdapter.KEYSTYPED_WHITE) {
-                white++;
-                return;
-            }
-            if (signal == SignalAdapter.KEYSTYPED_SYMBOL) {
-                symbol++;
-                return;
-            }
-            if (signal == SignalAdapter.KEYSTYPED_ARROW || signal == SignalAdapter.KEYSTYPED_JUMP) {
-                navigation++;
-                return;
-            }
-            if (signal == SignalAdapter.KEYSTYPED_LETTER || signal == SignalAdapter.KEYSTYPED_DIGIT) {
-                alphanum++;
-                return;
-            }
-            if (signal == SignalAdapter.KEYSTYPED_COPY || signal == SignalAdapter.KEYSTYPED_PASTE || signal == SignalAdapter.KEYSTYPED_CUT || signal == SignalAdapter.KEYSTYPED_ISO) {
-                commands++;
-                return;
-            }
-            if (signal == SignalAdapter.KEYSTYPED_DELETE || signal == SignalAdapter.KEYSTYPED_BACKSPACE) {
-                erase++;
-                return;
-            }
+            
             if (signal == SignalAdapter.UNNECESSARY) {
                 unnecessary = true;
                 return;

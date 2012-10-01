@@ -11,30 +11,28 @@ import org.w3c.dom.Element;
  *
  * @author waziz
  */
-public class PETCommandEvent extends PETAbstractEvent{
+public class PETEditOperationEvent extends PETAbstractEvent{
     
-    public static final String TYPE = "command";
+    public static final String TYPE = "editop";
     
-    public static enum CommandType{
-        COPY,
-        PASTE,
-        CUT,
-        DELETE,
-        BACKSPACE,
-        UNDO,
-        REDO
+    public static enum EditOperation{
+        DELETE, 
+        INSERT,
+        REPLACE,
+        SHIFT,
+        TRIM
     }
     
-    private final CommandType command;
+    private final EditOperation operation;
     
-    public PETCommandEvent(final CommandType command){
+    public PETEditOperationEvent(final EditOperation operation){
         super();
-        this.command = command;
+        this.operation = operation;
     }
     
-    public PETCommandEvent(final Element xml){
+    public PETEditOperationEvent(final Element xml){
         super(xml);
-        this.command = CommandType.valueOf(xml.getTextContent());
+        this.operation = EditOperation.valueOf(xml.getTextContent());
     }
     
     @Override
@@ -42,13 +40,13 @@ public class PETCommandEvent extends PETAbstractEvent{
         return TYPE;
     }
     
-    public CommandType getCommand(){
-        return command;
+    public EditOperation getOperation(){
+        return operation;
     }
     
     @Override
     public String toString(){
-        return command.toString();
+        return operation.toString();
     }
     
     @Override

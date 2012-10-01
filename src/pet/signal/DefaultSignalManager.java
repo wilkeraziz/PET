@@ -40,6 +40,7 @@ public class DefaultSignalManager implements SignalManager {
         evtListeners.remove(listener);
     }
 
+    @Override
     public void fire(final Signal signal) {
         if (singleListener != null) {
             singleListener.treat(signal);
@@ -49,6 +50,7 @@ public class DefaultSignalManager implements SignalManager {
         }
     }
 
+    @Override
     public void fire(final Signal signal, final SignalPackage pack) {
         if (singleListener != null) {
             singleListener.treat(signal, pack);
@@ -58,10 +60,12 @@ public class DefaultSignalManager implements SignalManager {
         }
     }
 
+    @Override
     public void addListener(final SignalListener listener) {
         listening.add(listener);
     }
 
+    @Override
     public void replaceSingleListener(final SingleSignalListener listener) {
         singleListener = listener;
     }
