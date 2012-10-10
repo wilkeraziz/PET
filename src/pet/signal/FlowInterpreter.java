@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.Period;
 import pet.annotation.EffortIndicator;
-import pet.annotation.adapter.CountEffortIndicator;
 import pet.annotation.adapter.TimeEffortIndicator;
 
 /**

@@ -180,7 +180,6 @@ public class EditionStatusController implements EditingStatusProvider {
             clock.resetGettingTime();
             unit.activate();
             //updateCurrentFacade(true);
-            //ContextHandler.signalManager().fire(SignalAdapter.EDITING_START);
             ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.EDITING_START));
             
         }

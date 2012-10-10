@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.util.ArrayList;
@@ -902,24 +901,12 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
     }
 
     private void getAssessment(final EditableUnit snapshot) {
-        //ContextHandler.signalManager().fire(SignalAdapter.EDITING_END);
         ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.EDITING_END));
 
         if (ContextHandler.assessing()) {
-            //ContextHandler.signalManager().fire(SignalAdapter.ASSESSING_START);
             ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.ASSESSING_START));
             assessments = new ArrayList<AssessmentChoice>();
             final int assessmentsByPage = ContextHandler.assessmentsByPage();
-            /*if (assessmentsByPage == 1) {
-            for (final AssessmentDescriptor descriptor : AssessmentSelector.getAssessmentDescriptors(snapshot)) {
-            final GridAssessmentPage dialog = new GridAssessmentPage(new javax.swing.JFrame(),
-            true,
-            this,
-            AssessmentSelector.getSummary(snapshot),
-            Collections.singletonList(descriptor));
-            dialog.setVisible(true);
-            }
-            } else {*/
             final List<AssessmentDescriptor> descriptors = AssessmentSelector.getAssessmentDescriptors(snapshot);
             for (int i = 0; i < descriptors.size(); i += assessmentsByPage) {
                 final List<AssessmentDescriptor> selected = new ArrayList<AssessmentDescriptor>();
@@ -938,8 +925,6 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
                         selected);
                 dialog.setVisible(true);
             }
-            // }
-            //ContextHandler.signalManager().fire(SignalAdapter.ASSESSING_END);
             ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.ASSESSING_END));
         } else {
             skipAssessment();
@@ -948,7 +933,6 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
     }
 
     private void skipAssessment() {
-        //ContextHandler.signalManager().fire(SignalAdapter.EDITING_END);
         ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.EDITING_END));
         assessments = Collections.emptyList();
     }

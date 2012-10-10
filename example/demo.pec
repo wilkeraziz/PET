@@ -43,7 +43,7 @@ postEditingAssessment=accuracy|How accurate was the MT?|1|0|1|2|3|4
 assessmentsByPage=2
 
 # You can disable assessments switching on the following flag:
-#disableAssessment
+disableAssessment
 # Assessments come with optional comments, you may disable them
 #disableCommentOnAssessment
 

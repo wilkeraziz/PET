@@ -34,14 +34,14 @@ public class EditableUnit implements pet.annotation.Unit {
     private IncompleteUnitResult editing;
     private final SegmentType type;
     private final List<UnitResult> results;
-    private final SignalHandler builder;
+    private final SignalHandler handler;
 
     private EditableUnit(final EditableUnit unit, final Segment target) {
         this.unit = unit.getOriginalUnit();
         this.type = unit.type;
         this.editing = new IncompleteUnitResult(target);
         this.results = new ArrayList<UnitResult>(unit.results);
-        this.builder = new SignalHandler(unit.getStatus());
+        this.handler = new SignalHandler(unit.getStatus());
     }
 
     public EditableUnit(final pet.annotation.Unit unit) {
@@ -49,14 +49,14 @@ public class EditableUnit implements pet.annotation.Unit {
         this.type = (unit instanceof pet.annotation.adapter.TranslationUnit) ? SegmentTypeAdapter.HT : SegmentTypeAdapter.POST_EDITED_MT;
         this.editing = new IncompleteUnitResult(unit.getTarget());
         this.results = new ArrayList<UnitResult>();
-        this.builder = new SignalHandler(unit.getStatus());
+        this.handler = new SignalHandler(unit.getStatus());
     }
 
     public EditableUnit(final pet.annotation.Unit unit, final List<UnitResult> results) {
         this.unit = unit;
         this.type = (unit instanceof pet.annotation.adapter.TranslationUnit) ? SegmentTypeAdapter.HT : SegmentTypeAdapter.POST_EDITED_MT;
         this.results = new ArrayList<UnitResult>(results);
-        this.builder = new SignalHandler(unit.getStatus());
+        this.handler = new SignalHandler(unit.getStatus());
         int maxr = -1;
         int r = -1;
         for (int i = 0; i < results.size(); i++) {
@@ -128,11 +128,11 @@ public class EditableUnit implements pet.annotation.Unit {
     }
 
     public void activate() {
-        builder.publishListeners();
+        handler.publishListeners();
     }
 
     public void deactivate() {
-        builder.unpublishListeners();
+        handler.unpublishListeners();
     }
 
     public pet.annotation.Unit getOriginalUnit() {
@@ -145,7 +145,7 @@ public class EditableUnit implements pet.annotation.Unit {
 
     @Override
     public Status getStatus() {
-        return builder.getStatus();
+        return handler.getStatus();
     }
 
     public Segment getOriginalTarget() {
@@ -153,15 +153,15 @@ public class EditableUnit implements pet.annotation.Unit {
     }
 
     public Period getTotalTimeSpent() {
-        return builder.getTotalTimeSpent();
+        return handler.getTotalTimeSpent();
     }
 
     public Period getEditingTime() {
-        return builder.getTotalEditingTime();
+        return handler.getTotalEditingTime();
     }
 
     public Period getAssessingTime() {
-        return builder.getTotalAssessingTime();
+        return handler.getTotalAssessingTime();
     }
 
     @Override
@@ -173,9 +173,8 @@ public class EditableUnit implements pet.annotation.Unit {
             final List<AssessmentChoice> assessments) {
         if (getStatus() == StatusAdapter.STARTED) {
             ContextHandler.signalManager().fire(SignalAdapter.DONE);
-
             editing = editing.consolidate(new StringSentence(type, edited, getUpdatedProducer()));
-            results.add(builder.buildResult(editing, assessments));
+            results.add(handler.buildResult(editing, assessments));
             return true;
         }
         return false;
@@ -187,7 +186,6 @@ public class EditableUnit implements pet.annotation.Unit {
         private DateTime editingEndTime;
         private DateTime assessingStartTime;
         private DateTime assessingEndTime;
-        
         private boolean logging;
         private boolean autoaccept;
         private boolean impossible;
@@ -198,7 +196,6 @@ public class EditableUnit implements pet.annotation.Unit {
         private final List<EffortIndicator> actions;
         private final boolean compactLog = true;
         private final List<PETEvent> events;
-        
         private final List<EventInterpreter> interpreters; // TODO: make it customizable
 
         private SignalHandler(final Status status) {
@@ -212,32 +209,33 @@ public class EditableUnit implements pet.annotation.Unit {
             this.logging = false;
 
             this.events = new ArrayList<PETEvent>();
-            this.interpreters =  new ArrayList<EventInterpreter>();
+            this.interpreters = new ArrayList<EventInterpreter>();
             this.interpreters.add(new FlowInterpreter(ContextHandler.assessing()));
-            if (ContextHandler.keystrokes()){
+            if (ContextHandler.keystrokes()) {
                 this.interpreters.add(new KeystrokeInterpreter());
             }
         }
 
         @Override
-        public void treat(final PETEvent event) {
-            events.add(event);
-            if (event instanceof PETFlowEvent){
-                if (((PETFlowEvent)event).getAction() == PETFlowEvent.ActionType.EDITING_START){
+        public void treat(final PETEvent e) {
+            events.add(e);
+            if (e instanceof PETFlowEvent) {
+                final PETFlowEvent evt = (PETFlowEvent) e;
+                if (evt.getAction() == PETFlowEvent.ActionType.EDITING_START) {
                     status = StatusAdapter.STARTED;
                     startLogging();
                 }
             }
-            
+
         }
 
         public void publishListeners() {
-            ContextHandler.signalManager().replaceSingleListener(builder);
-            ContextHandler.signalManager().addListener(builder);
+            ContextHandler.signalManager().replaceSingleListener(handler);
+            ContextHandler.signalManager().addListener(handler);
         }
 
         public void unpublishListeners() {
-            ContextHandler.signalManager().removeListener(builder);
+            ContextHandler.signalManager().removeListener(handler);
         }
 
         public Period getTotalEditingTime() {
@@ -295,7 +293,7 @@ public class EditableUnit implements pet.annotation.Unit {
                     assessmentList.add(new StringAssessment(chosen));
                 }
             }
-            
+
             if (ContextHandler.autoAccept()) {
                 indicators.add(new FlagEffortIndicator("autoaccept", autoaccept));
             }
@@ -399,18 +397,18 @@ public class EditableUnit implements pet.annotation.Unit {
                 }
             }
 
-            
-            for (final EventInterpreter interpreter : this.interpreters){
+
+            for (final EventInterpreter interpreter : this.interpreters) {
                 indicators.addAll(interpreter.interpret(events));
             }
-            
+
             final UnitResult result = new UnitResultAdapter(incomplete,
                     indicators,
                     assessmentList,
                     events);
 
             events.clear();
-            
+
             impossible = false;
             unchanged = false;
             unnecessary = false;
@@ -418,39 +416,13 @@ public class EditableUnit implements pet.annotation.Unit {
 
             return result;
         }
-        
-       
 
         @Override
         public void treat(final Signal signal) {
-            //if (!logging) {
-            //    if (signal == SignalAdapter.EDITING_START) {
-            //        status = StatusAdapter.STARTED;
-            //        editingStartTime = new DateTime(System.currentTimeMillis());
-            //        startLogging();
-            //        return;
-            //    }
-            //    return;
-            //}
             if (signal == SignalAdapter.DONE) {
                 status = StatusAdapter.FINISHED;
                 return;
             }
-
-            //if (signal == SignalAdapter.EDITING_END) {
-            //    editingEndTime = new DateTime(System.currentTimeMillis());
-            //    return;
-            //}
-            //if (signal == SignalAdapter.ASSESSING_START) {
-            //    assessingStartTime = new DateTime(System.currentTimeMillis());
-            //    return;
-            //}
-            
-            //if (signal == SignalAdapter.ASSESSING_END) {
-            //    assessingEndTime = new DateTime(System.currentTimeMillis());
-            //    return;
-            //}
-            
             if (signal == SignalAdapter.UNNECESSARY) {
                 unnecessary = true;
                 return;
@@ -473,15 +445,6 @@ public class EditableUnit implements pet.annotation.Unit {
 
         @Override
         public void treat(final Signal signal, final SignalPackage pack) {
-            //if (!logging) {
-            //    if (signal == SignalAdapter.EDITING_START) {
-            //        status = StatusAdapter.STARTED;
-            //        editingStartTime = new DateTime(System.currentTimeMillis());
-            //        startLogging();
-            //        return;
-            //    }
-            //    return;
-            //}
             if (signal == SignalAdapter.TEXT_INSERTION) {
                 final ChangeSignalPackage change = (ChangeSignalPackage) pack;
                 changes.add(ChangeEffortIndicator.getInsertion(change.getOffset(),
