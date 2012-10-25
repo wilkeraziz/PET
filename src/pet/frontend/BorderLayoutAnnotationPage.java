@@ -1266,22 +1266,7 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
                     break;
                 case KeyEvent.VK_Y:
                     ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.REDO));
-                    break;
-                //case KeyEvent.VK_R:
-                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.REPLACE)); // TODO: this should be fired by the operations themselves rather than the keystroke logger
-                //    break;
-                //case KeyEvent.VK_I:
-                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.INSERT));
-                //    break;
-                //case KeyEvent.VK_D:
-                //    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.DELETE));
-                //    break;
-                //case KeyEvent.VK_T:
-                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.TRIM));
-                //    break;
-                //case KeyEvent.VK_S:
-                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.SHIFT));
-                //    break;
+                    break;                
             }
         } else {
             switch (evt.getKeyCode()) {
@@ -1310,41 +1295,6 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
                     ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGUP));
                     break;
             }
-        }
-
-        ContextHandler.signalManager().fire(SignalAdapter.KEYSTROKE);
-
-        try {
-            int keycode = evt.getKeyCode();
-            char keychar = evt.getKeyChar();
-
-            if (keycode == KeyEvent.VK_UP || keycode == KeyEvent.VK_DOWN || keycode == KeyEvent.VK_LEFT || keycode == KeyEvent.VK_RIGHT) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_ARROW);
-            } else if (keycode == KeyEvent.VK_HOME || keycode == KeyEvent.VK_END || keycode == KeyEvent.VK_PAGE_DOWN || keycode == KeyEvent.VK_PAGE_UP) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_JUMP);
-            } else if (keycode == KeyEvent.VK_COPY) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_COPY);
-            } else if (keycode == KeyEvent.VK_PASTE) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_PASTE);
-            } else if (keycode == KeyEvent.VK_CUT) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_CUT);
-            } else if (keycode == KeyEvent.VK_DELETE) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_DELETE);
-            } else if (keycode == KeyEvent.VK_BACK_SPACE) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_BACKSPACE);
-            } else if (Character.isWhitespace(keychar)) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_WHITE);
-            } else if (Character.isISOControl(keychar)) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_ISO);
-            } else if (Character.isDigit(keychar)) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_DIGIT);
-            } else if (Character.isLetter(keychar)) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_LETTER);
-            } else if (Character.isDefined(keychar)) {
-                ContextHandler.signalManager().fire(SignalAdapter.KEYSTYPED_SYMBOL);
-            }
-        } catch (final Exception e) {
-            System.err.println("Excepetion caught: " + e);
         }
     }
 
