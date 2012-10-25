@@ -18,6 +18,7 @@ target=es
 # You may want to change the annotation page
 # how many sentences get displayed
 sentencesByPage=9
+editablePosition=1
 
 # hide the bottom pane to get more space
 hideBottomPane

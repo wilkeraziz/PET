@@ -6,7 +6,9 @@ package pet.frontend.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import pet.config.ContextHandler;
 import pet.frontend.components.AbstractUnitGUI;
+import pet.signal.PETEditOperationEvent;
 import pet.usr.adapter.EditionStatus;
 import pet.usr.handler.UnitHandler;
 
@@ -24,6 +26,7 @@ public class DeleteActionListener implements ActionListener {
         final String selected = gui.getSelectedText();
         if (selected != null && !selected.isEmpty()) {
             gui.replaceSelection("");
+            ContextHandler.signalManager().fire(new PETEditOperationEvent(new PETEditOperationEvent.Deletion(gui.getSelectionStart(), selected)));
         }
 
 

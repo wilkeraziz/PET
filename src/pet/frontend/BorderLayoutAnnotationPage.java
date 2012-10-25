@@ -1267,21 +1267,21 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
                 case KeyEvent.VK_Y:
                     ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.REDO));
                     break;
-                case KeyEvent.VK_R:
-                    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.REPLACE)); // TODO: this should be fired by the operations themselves rather than the keystroke logger
-                    break;
-                case KeyEvent.VK_I:
-                    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.INSERT));
-                    break;
-                case KeyEvent.VK_D:
-                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.DELETE));
-                    break;
-                case KeyEvent.VK_T:
-                    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.TRIM));
-                    break;
-                case KeyEvent.VK_S:
-                    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.SHIFT));
-                    break;
+                //case KeyEvent.VK_R:
+                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.REPLACE)); // TODO: this should be fired by the operations themselves rather than the keystroke logger
+                //    break;
+                //case KeyEvent.VK_I:
+                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.INSERT));
+                //    break;
+                //case KeyEvent.VK_D:
+                //    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.DELETE));
+                //    break;
+                //case KeyEvent.VK_T:
+                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.TRIM));
+                //    break;
+                //case KeyEvent.VK_S:
+                //    ContextHandler.signalManager().fire(new PETEditOperationEvent(PETEditOperationEvent.EditOperation.SHIFT));
+                //    break;
             }
         } else {
             switch (evt.getKeyCode()) {

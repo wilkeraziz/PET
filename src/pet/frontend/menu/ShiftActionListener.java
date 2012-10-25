@@ -13,7 +13,9 @@ import javax.swing.JOptionPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
+import pet.config.ContextHandler;
 import pet.frontend.components.AbstractUnitGUI;
+import pet.signal.PETEditOperationEvent;
 import pet.usr.adapter.EditionStatus;
 import pet.usr.handler.UnitHandler;
 
@@ -36,17 +38,22 @@ public class ShiftActionListener implements ActionListener {
             final int start = gui.getSelectionStart();
             final int end = gui.getSelectionEnd();
             final Document doc = gui.getDocument();
+            int destination = -1;
             if (ae.getSource() instanceof JMenuItem) {
                 final JMenuItem source = (JMenuItem) (ae.getSource());
                 if (source.getText().equals("BOS")) {
                     try {
-                        doc.insertString(0, selected.trim() + " ", keyWord);
+                        destination = 0;
+                        gui.replaceSelection("");
+                        doc.insertString(destination, selected.trim() + " ", keyWord);
                     } catch (BadLocationException ex) {
                         Logger.getLogger(ShiftActionListener.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else if (source.getText().equals("EOS")) {
                     try {
-                        doc.insertString(doc.getLength(), " " + selected.trim(), keyWord);
+                        gui.replaceSelection("");
+                        destination = doc.getLength();
+                        doc.insertString(destination, " " + selected.trim(), keyWord);
                     } catch (BadLocationException ex) {
                         Logger.getLogger(ShiftActionListener.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -54,14 +61,14 @@ public class ShiftActionListener implements ActionListener {
                     final String strDist = JOptionPane.showInputDialog("Distance: ");
                     try {
                         final int dist = Integer.parseInt(strDist.replaceAll("^[+]", ""));
-                        move(doc, gui, start, end, selected, dist);
+                        destination = move(doc, gui, start, end, selected, dist);
                     } catch (final Exception e) {
                     }
                 } else {
                     try {
                         final String opt = source.getText().replaceAll("^[+]", "");
                         final int dist = Integer.parseInt(opt);
-                        move(doc, gui, start, end, selected, dist);
+                        destination = move(doc, gui, start, end, selected, dist);
                     } catch (final Exception e) {
                     }
                 }
@@ -69,17 +76,21 @@ public class ShiftActionListener implements ActionListener {
                 final String strDist = JOptionPane.showInputDialog("Distance: ");
                 try {
                     final int dist = Integer.parseInt(strDist.replaceAll("^[+]", ""));
-                    move(doc, gui, start, end, selected, dist);
+                    destination = move(doc, gui, start, end, selected, dist);
                 } catch (final Exception e) {
                 }
+            }
+            if (destination >= 0) {
+                ContextHandler.signalManager().fire(new PETEditOperationEvent(new PETEditOperationEvent.Shift(selected, start, destination)));
             }
 
         }
 
     }
 
-    private void move(final Document doc, final AbstractUnitGUI gui, final int start, final int end, final String text, final int dist) {
+    private int move(final Document doc, final AbstractUnitGUI gui, final int start, final int end, final String text, final int dist) {
         gui.replaceSelection("");
+        int destination = -1;
         if (dist > 0) {
             try {
                 final String tail = doc.getText(start, doc.getLength() - start);
@@ -104,10 +115,11 @@ public class ShiftActionListener implements ActionListener {
                         }
                     }
                 }
+                destination = start + i;
                 if (start + i < doc.getLength()) {
-                    doc.insertString(start + i, text.trim() + " ", keyWord);
+                    doc.insertString(destination, text.trim() + " ", keyWord);
                 } else {
-                    doc.insertString(start + i, " " + text.trim(), keyWord);
+                    doc.insertString(destination, " " + text.trim(), keyWord);
                 }
             } catch (BadLocationException ex) {
                 Logger.getLogger(ShiftActionListener.class.getName()).log(Level.SEVERE, null, ex);
@@ -138,13 +150,16 @@ public class ShiftActionListener implements ActionListener {
                     }
                 }
                 if (i > 0) {
-                    doc.insertString(i + 1, " " + text.trim(), keyWord);
+                    destination = i + 1;
+                    doc.insertString(destination, " " + text.trim(), keyWord);
                 } else {
-                    doc.insertString(0, text.trim() + " ", keyWord);
+                    destination = 0;
+                    doc.insertString(destination, text.trim() + " ", keyWord);
                 }
             } catch (BadLocationException ex) {
                 Logger.getLogger(ShiftActionListener.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        return destination;
     }
 }

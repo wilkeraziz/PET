@@ -22,6 +22,11 @@ public class PETParseException extends Exception {
     public String getType(){
         return type;
     }
+    
+    @Override
+    public String getMessage(){
+        return type + ": " + super.getMessage();
+    }
 
 
 }

@@ -197,14 +197,14 @@ public class PopupMenuFactory {
         final JPopupMenu menu = new JPopupMenu();
 
         // text operations
-        JMenuItem menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
+        JMenuItem menuItem = new JMenuItem(new CopyAction());
         menuItem.setText("copy");
         menu.add(menuItem);
         if (active) {
-            menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
+            menuItem = new JMenuItem(new CutAction());
             menuItem.setText("cut");
             menu.add(menuItem);
-            menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
+            menuItem = new JMenuItem(new PasteAction());
             menuItem.setText("paste");
             menu.add(menuItem);
             menu.addSeparator();

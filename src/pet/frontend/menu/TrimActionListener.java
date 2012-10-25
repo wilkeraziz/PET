@@ -11,7 +11,9 @@ import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
+import pet.config.ContextHandler;
 import pet.frontend.components.AbstractUnitGUI;
+import pet.signal.PETEditOperationEvent;
 import pet.usr.adapter.EditionStatus;
 import pet.usr.handler.UnitHandler;
 
@@ -31,8 +33,10 @@ public class TrimActionListener implements ActionListener {
         final Document doc = gui.getDocument();
         try {
             final String text = doc.getText(0, doc.getLength());
+            final int oldlen = text.length();
             doc.remove(0, doc.getLength());
             doc.insertString(0, text.trim().replaceAll("\\s+", " "), keyWord);
+            ContextHandler.signalManager().fire(new PETEditOperationEvent(new PETEditOperationEvent.Trim(oldlen - doc.getLength())));
         } catch (BadLocationException ex) {
             Logger.getLogger(TrimActionListener.class.getName()).log(Level.SEVERE, null, ex);
         }
