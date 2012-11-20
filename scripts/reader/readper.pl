@@ -11,7 +11,7 @@ binmode(STDOUT, ":utf8");
 binmode(STDERR, ":utf8");
 
 my $Me = "readper.pl";
-my ($JOB, $TASK, $S, $MT, $PE, $HT, $ANNOTATION, $IDEAL, $PREFERABLE, $MAX, $INDICATOR, $REVISION, $ID, $PRODUCER, $STATUS, $TYPE) = qw/job task S MT PE HT annotation ideal preferable max indicator r id producer status type/;
+my ($JOB, $UNIT, $TASK, $S, $MT, $PE, $HT, $ANNOTATION, $IDEAL, $PREFERABLE, $MAX, $INDICATOR, $REVISION, $ID, $PRODUCER, $STATUS, $TYPE) = qw/job unit task S MT PE HT annotation ideal preferable max indicator r id producer status type/;
 my $ASSESSMENT = "assessment";
 my ($help, $per, $tmp, $history);
 
@@ -22,7 +22,7 @@ my $trackChanges;
 my $ter = "/home/tools/ter/tercom-0.7.25/tercom.7.25.jar";
 my $encoding = 'utf-8';
 $tmp = 'tmp';
-my $html;
+my $html = 'html';
 my @additional;
 my @assessments;
 
@@ -35,15 +35,18 @@ $help=1 unless
 	'indicator=s' => \@additional,
 	'assessment=s' => \@assessments,
 	'flagid' => \$flagid,
-	'html' => \$html,
+	'html=s' => \$html,
 	'track-changes' => \$trackChanges,
 	'help' => \$help,
 );
+
+$flagid = 1;
 
 if ($help or not ($per and $annotator)){
 	print STDERR "$Me
 	--per <file>         * A PER file
 	--annotator <str>    * Annnotator who performed the PEJ
+    --html      <dir>    Where the .html files will be placed (default: html)
 	--tmp <dir>          A temp directory (default: ./tmp)
 	--ter <path>         Path to TER jar (default: /home/tools/ter/tercom-0.7.25/tercom.7.25.jar)
 	                     Computes HTER for each segment if the tool is available where indicated
@@ -51,10 +54,8 @@ if ($help or not ($per and $annotator)){
 
 	--indicator <id>     Parses additional indicators
 	--assessment <id>    Parses assessments
-	--html               Parses HTML from text fields
 
 	--track-changes      Gets a history of changes
-	--flagid             Outputs the id of the unit in output files
 
 	Example:
 		./readper.pl --per your_output.per --annotator your_name
@@ -67,6 +68,9 @@ if ($help or not ($per and $annotator)){
 	\n";
 	exit 1;
 }
+
+
+mkdir $html;
 
 # preparing some global values
 my $useTER = 0;
@@ -89,25 +93,82 @@ my $jobid = $xmlJob->attr($ID);
 if ($jobid =~ m/^\s*$/){
 	$jobid = $per;
 	$jobid =~ s/^.+\///;
+	$jobid =~ s/\.per$//;
 }
 # no spaces
 $jobid =~ s/\s+/_/g;
 
-my @xmlTasks = $reader->find($TASK);
-open (my $OS, ">:utf8", "$per.source") or die "Could not write src file\n";
-open (my $OM, ">:utf8", "$per.mt") or die "Could not write mt file\n";
-open (my $OP, ">:utf8", "$per.pe") or die "Could not write pe file\n";
-open (my $OSUM, ">:utf8", "$per.summary") or die "Could not write summary file\n";
-open (my $OHIS, ">:utf8", "$per.history") or die "Could not write history file\n";
-open (my $OOPS, ">:utf8", "$per.operations") or die "Could not write history (operations) file\n";
+my @xmlTasks = $reader->find($UNIT);
+@xmlTasks = $reader->find($TASK) unless @xmlTasks;
 
-print $OOPS join("\t", ("#i", "#type", "#elapsed", "#words", "#len", "#in", "#out")), "\n\n";
+open (my $OS, ">:utf8", "$html/$per.source.html") or die "Could not write src file\n";
+open (my $OM, ">:utf8", "$html/$per.mt.html") or die "Could not write mt file\n";
+open (my $OP, ">:utf8", "$html/$per.pe.html") or die "Could not write pe file\n";
+open (my $OSUM, ">:utf8", "$per.summary") or die "Could not write summary file\n";
+open (my $OHIS, ">:utf8", "$html/$per.history.html") or die "Could not write history file\n";
+open (my $OOPS, ">:utf8", "$html/$per.operations.html") or die "Could not write history (operations) file\n";
+
+print $OS "
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/> 
+	<title>$jobid - Source</title>
+</head>
+<body>
+<table border='1'>
+<tr><th>id</th><th>Sentence</th></tr>
+";
+
+print $OM "
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/> 
+	<title>$jobid - MT</title>
+</head>
+<body>
+<table border='1'>
+<tr><th>id</th><th>Producer</th><th>Sentence</th></tr>
+";
+
+print $OP "
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/> 
+	<title>$jobid - PE</title>
+</head>
+<body>
+<table border='1'>
+<tr><th>id</th><th>Producer</th><th>Annotator</ht><th>Sentence</th></tr>
+";
+
+
+print $OHIS "
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/> 
+	<title>$jobid - History</title>
+</head>
+<body>
+<table border='1'>
+";
+
+print $OOPS "
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'/> 
+	<title>$jobid - Operations</title>
+</head>
+<body>
+<table border='1'>
+";
+
+#print $OOPS join("\t", ("#i", "#type", "#elapsed", "#words", "#len", "#in", "#out")), "\n\n";
 
 my $info = {};
 my $avghter = {};
 
 # if you want to include information in the summary or change its order this is the place
-my @header = qw/id type status producer revisions editing_time assessing_time src_tokens mt_tokens pe_tokens src_len mt_len pe_len keystrokes printable_keystrokes unchanged lc_unchanged secondsPerWord oer-word oer-len oer-time irate drate/;
+my @header = qw/id type status producer revisions editing assessing src_tokens mt_tokens pe_tokens src_len mt_len pe_len letter-keys digit-keys white-keys symbol-keys navigation-keys erase-keys copy-keys cut-keys paste-keys do-keys keystrokes unchanged lc_unchanged secondsPerWord oer-word oer-len oer-time irate drate/;
 
 
 push(@header, 'hter') if $useTER;
@@ -150,10 +211,19 @@ foreach my $xmlTask (@xmlTasks){
 		'mt_tokens' => getTokens($mttext),
 		'pe_tokens' => getTokens($petext),
 		'revisions' => $revision->{revisions},
-		'keystrokes' => $revision->{"$INDICATOR:keystrokes"},
-		'printable_keystrokes' => ($revision->{"$INDICATOR:white-keystyped"} + $revision->{"$INDICATOR:nonwhite-keystyped"}),
-		'editing_time' => $revision->{"$INDICATOR:editing"},
-		'assessing_time' => $revision->{"$INDICATOR:assessing"},
+        'letter-keys' => $revision->{"$INDICATOR:letter-keys"},
+        'digit-keys' => $revision->{"$INDICATOR:digit-keys"},
+        'white-keys' => $revision->{"$INDICATOR:white-keys"},
+        'symbol-keys' => $revision->{"$INDICATOR:symbol-keys"},
+        'navigation-keys' => $revision->{"$INDICATOR:navigation-keys"},
+        'erase-keys' => $revision->{"$INDICATOR:erase-keys"},
+        'copy-keys' => $revision->{"$INDICATOR:copy-keys"},
+        'cut-keys' => $revision->{"$INDICATOR:cut-keys"},
+        'paste-keys' => $revision->{"$INDICATOR:paste-keys"},
+        'do-keys' => $revision->{"$INDICATOR:do-keys"},
+		'keystrokes' => sumkeys($revision),
+		'editing' => $revision->{"$INDICATOR:editing"},
+		'assessing' => $revision->{"$INDICATOR:assessing"},
 		'unchanged' => ($revision->{"$INDICATOR:unchanged"} == 1)?'true':'false',
 		'lc_unchanged' => (lc($mttext) eq lc($petext))?'true':'false',
 		'data_object' => $revision, # this object contains the changes and stuff like that (check getCurrentRevision)
@@ -174,19 +244,15 @@ foreach my $xmlTask (@xmlTasks){
 	
 	# one could store here the current output in order
 	# push(@outputs, $output); 
-
+	my $editingTime = $revision->{"$INDICATOR:editing"};
 	my $prefix = "";
 	$prefix = "$id: " if $flagid;
-	my $prefixmt = "";
-	$prefixmt = "$id.$producer: " if $flagid;
-	my $prefixpe = "";
-	$prefixpe = "$id.$producer.$annotator: " if $flagid;
-	printHistory("$id: ", $revision->{transformations}, $OHIS);
-	printOperations("$jobid $annotator $id $type $status $producer", $revision->{changes}, $OOPS);
-	print $OS "$prefix$srctext\n";
-	print $OM "$prefixmt$mttext\n";
+	printHistory($jobid, $annotator, $id, $type, $status, $producer, $revision->{transformations}, $OHIS);
+	printOperations($jobid, $annotator, $id, $type, $status, $producer, $revision->{changes}, $editingTime, $OOPS);
+	print $OS "<tr><td><a name='$id'>$id</a></td><td>$srctext</td></tr>\n";
+	print $OM "<tr><td><a name='$id.$producer'>$id</a></td><td>$producer</td><td>$mttext</td></tr>\n";
 	$petext =~ s/\n/\t/g;
-	print $OP "$prefixpe$petext\n";
+	print $OP "<tr><td><a name='$id.$producer.$annotator'>$id</a></td><td>$producer</td><td>$annotator</td><td>$petext</td></tr>\n";
 	my @ordered_output;
 	foreach my $key (@header,@additional,@assessments){
 		my $value = $output->{$key};
@@ -206,18 +272,35 @@ foreach my $xmlTask (@xmlTasks){
 	$info->{done}++ if $status eq 'FINISHED';
 	$info->{$type}++;
 }
+
+print $OHIS "</table>
+</body>
+</html>";
+
+print $OOPS "</table>
+</body>
+</html>";
+
+print $OS "</table>
+</body>
+</html>";
+
+print $OM "</table>
+</body>
+</html>";
+
+print $OP "</table>
+</body>
+</html>";
+
+close $OOPS;
 close $OS;
 close $OM;
 close $OP;
 close $OSUM;
 
-if ($useTER){
-    if ($avghter->{chunks}){
-        $avghter->{hter} = $avghter->{bad}/$avghter->{chunks};
-    } else{
-        $avghter->{hter} = 0;
-    }
-}
+
+$avghter->{hter} = $avghter->{bad}/$avghter->{chunks} if $useTER and $avghter->{chunks};
 
 printf "Tasks: %d out of %d\n", $info->{done}, $info->{tasks};
 printf "Total editing time: %.4f\nAverage editing time: %.4f\n", $info->{acc_editing}, $info->{acc_editing}/$info->{done};
@@ -251,7 +334,7 @@ sub getCurrentRevision
 	my @annotations = $xml->find($ANNOTATION);
 	my $n = scalar(@annotations);
 	my $changes = [];
-	my $transformations = [$mttext];
+	my $transformations = [];
 	my $features = {'revisions' => $n, 'changes' => $changes, 'transformations' => $transformations};
 	foreach my $annotation (@annotations){
 		my $r = $annotation->attr($REVISION);
@@ -268,17 +351,14 @@ sub getCurrentRevision
 			$value = toBoolean($value) if $type eq 'flag';
 			if ($type eq 'time' or $type eq 'count'){
 				$features->{"$INDICATOR:$id"} += $value;
-			} elsif ($type eq 'change'){
+			} elsif ($type eq 'change' or $type eq 'wrap'){
 				if ($trackChanges){
-					if ($changesSkipped < $minchanges){
-						$changesSkipped++;
-					} else{
-						my ($edit, $transformedmt) = parseChange($indicator, $transformations->[-1]);
-						push(@$transformations, $transformedmt);
-						push(@$changes, $edit) if defined $edit;
-					}
-				}
-			} else{
+                    my $initialmt = (scalar(@$transformations))?$transformations->[-1]:'';
+					my ($edit, $transformedmt) = parseChange($indicator, $id, $type, $initialmt);
+					push(@$changes, $edit);
+					push(@$transformations, $transformedmt);
+                }
+            } else{
 				$features->{"$INDICATOR:$id"} = $value;
 			}
 		}
@@ -304,27 +384,70 @@ sub getCurrentRevision
 
 sub parseChange
 {
-	my ($change, $mt) = @_;
-	my $id = $change->attr('id');
-	my $elapsed = $change->attr('elapsed');
-	my $length = $change->attr('length');
-	my $offset = $change->attr('offset');
-	my $in = sprintf("%s", $change->content_list);
-	my $out = "";
-	if ($id eq 'deletion' or $id eq 'substitution'){
-		$out = substr ($mt, $offset, $length, $in);
-	} elsif ($id eq 'insertion'){
-		$out = substr ($mt, $offset, 0, $in);
-	}
-	my @inTokens = split(/\s+/,trim($in));
-	my @outTokens = split(/\s+/,trim($out));
-	my $nWords = scalar(@inTokens) + scalar(@outTokens);
-	my $lenEdit = length($in) + length($out);
-	my $edit = undef;
-	if (!($in =~ m/^\s*$/ and $out =~ m/^\s*$/)){
-		$edit = {type => $id, elapsed => strToSeconds($elapsed), words => $nWords, len => $lenEdit, in => $in, out => $out};
-	}
-	return ($edit, $mt);
+	my ($indicator, $op, $type, $mt) = @_;
+	my $edit = {};
+    print "$op: ", $mt, "\n";
+    if ($type eq 'change'){
+        my $id = $indicator->attr('id');
+        my $elapsed = $indicator->attr('elapsed');
+        my $length = $indicator->attr('length');
+        my $offset = $indicator->attr('offset');
+        my $t0 = $indicator->attr('t0');
+        my $text = sprintf("%s", $indicator->content_list);
+        my $nWords = scalar(split(/\s+/, $text));
+        $edit = {type => $id, elapsed => strToSeconds($elapsed), words => $nWords, len => $length, in => $text, out => '', off => $offset, 'shift' => 0};
+        if ($id eq 'deletion'){
+            $edit->{in} = '';
+            $edit->{out} = $text;
+        }
+        if ($id eq 'deletion'){
+            substr ($mt, $offset, $length, '');
+        } elsif ($id eq 'insertion'){
+            substr ($mt, $offset, 0, $edit->{in});
+        } elsif ($id eq 'assignment'){
+            $mt = $edit->{in};
+        }
+        print "\t$id: ", $mt, "\n";
+        
+    } elsif ($type eq 'wrap'){
+        my ($first, $second) = $indicator->find('action');
+        my $id1 = $first->attr('id');
+        my $elapsed1 = $first->attr('elapsed');
+        my $length1 = $first->attr('length');
+        my $offset1 = $first->attr('offset');
+        my $t01 = $first->attr('t0');
+        my $text1 = sprintf("%s", $first->content_list);
+        my $nWords1 = scalar(split(/\s+/, $text1));
+        
+        my $id2 = $second->attr('id');
+        my $elapsed2 = $second->attr('elapsed');
+        my $length2 = $second->attr('length');
+        my $offset2 = $second->attr('offset');
+        my $t02 = $second->attr('t0');
+        my $text2 = sprintf("%s", $second->content_list);
+        my $nWords2 = scalar(split(/\s+/, $text2));
+
+        $edit = {type => $op, elapsed => strToSeconds($elapsed1) + strToSeconds($elapsed2), words => $nWords1 + $nWords2, len => $length1 + $length2, in => $text1, out => $text2, off => $offset1, 'shift' => $offset2 - $offset1};
+        if ($id1 eq 'deletion' or $id2 eq 'insertion'){
+            $edit->{in} = $text2;
+            $edit->{out} = $text1;
+        }
+        if ($id1 eq 'insertion'){
+            substr ($mt, $offset1, 0, $text1); # ins
+            print "\t", $mt, "\n";
+            substr ($mt, $offset2, $length2, ''); #del
+            print "\t", $mt, "\n";
+        } else{
+            substr ($mt, $offset1, $length1, ''); #del
+            print "\t", $mt, "\n";
+            substr ($mt, $offset2, 0, $text2); # ins
+            print "\t", $mt, "\n";
+        }
+    } else {
+        die "Not sure what to do with indicator of type: $type\n";
+    }
+    print "final: $mt\n";
+    return ($edit, $mt);
 }
 
 sub toBoolean
@@ -390,7 +513,12 @@ sub observedNumberOfEdits
 	my $edits = shift;
 	my ($words, $len, $time) = (0,0, 0);
 	my $byType = {};
+    my $first = 1;
 	foreach my $edit (@$edits){
+        if ($first){
+            $first = 0;
+            next;
+        }
 		$words += $edit->{words};
 		$len += $edit->{len};
 		$time += $edit->{elapsed};
@@ -457,21 +585,59 @@ sub detectShifts
 
 sub printHistory
 {
-	my ($prefix, $v, $O) = @_;
-	print $O "$prefix$_\n" foreach (@$v);
+	my ($job, $annotator, $id, $type, $status, $producer, $history, $O) = @_;
+	my $n = scalar(@$history);
+	print $O getHistHeader("$id.$type.$producer.$annotator", "$job $annotator $id $type $producer ($status) - $n edits"), "\n";
+	foreach my $entry (@$history){
+		print $O "<tr><td>$entry</td></tr>\n";
+	}
+}
+
+sub getColor
+{
+	my $ratio = shift;
+	if ($ratio >=0 and $ratio < 10){
+		return ("FFFFFF","black");
+	} elsif ($ratio >= 10 and $ratio < 20){
+		return ("00CCFF","black");
+	} elsif ($ratio >= 20 and $ratio < 30){
+		return ("0033FF","white");
+	} elsif ($ratio >= 30 and $ratio < 40){
+		return ("000099","white");
+	} elsif ($ratio >= 40 and $ratio < 50){
+		return ("9966FF","white");
+	} elsif ($ratio >= 50 and $ratio < 60){
+		return ("9900CC","white");
+	} elsif ($ratio >= 60 and $ratio < 70){
+		return ("990066","white");
+	} elsif ($ratio >= 70 and $ratio < 80){
+		return ("FF6600","white");
+	} elsif ($ratio >= 80 and $ratio < 90){
+		return ("FF3300","white");
+	} elsif ($ratio >= 90 and $ratio < 100){
+		return ("FF0000","white");
+	} else {
+		return ("000000","white");
+	}
 }
 
 sub printOperations
 {
-	my ($header, $edits, $O) = @_;
+	my ($job, $annotator, $id, $type, $status, $producer, $edits, $totalTime, $O) = @_;
 	my $i = 1;
 	my $n = scalar(@$edits);
-	print $O "$header $n\n";
+	print $O getOpHeader("$id.$type.$producer.$annotator", "$job $annotator $id $type $producer ($status) - $n edits");
 	foreach my $edit (@$edits){
 		my ($in, $out) = ($edit->{in}, $edit->{out});
 		$in =~ s/\t/ /g;
 		$out =~ s/\t/ /g;
-		print $O join("\t", ($i, $edit->{type}, $edit->{elapsed}, $edit->{words}, $edit->{len}, $edit->{in}, $edit->{out})), "\n";
+		print $O "<tr>";
+		my $ratio = sprintf ("%.2f", $edit->{elapsed}*100.0/$totalTime);
+		my ($back, $fore) = getColor($ratio);
+		print $O "\t<td>$_</td>" foreach ($i, $edit->{type});
+		print $O "\t<td bgcolor='#$back'><font color='$fore'>", $edit->{elapsed}, " (", $ratio, "%)</td>"; 
+		print $O "\t<td>$_</td>\n" foreach ($edit->{words}, $edit->{len}, $edit->{off}, $edit->{'shift'}, $edit->{in}, $edit->{out});
+		print $O "</tr>\n";
 		$i++;
 	}
 	print $O "\n";
@@ -484,4 +650,42 @@ sub parseHTML
 	my $htmlReader = HTML::TreeBuilder->new();
 	$htmlReader->parse($data);
 	return $htmlReader->as_text;
+}
+
+sub getOpHeader
+{
+	my ($anchor, $title) = @_;
+	return "<tr><th colspan='9'><a name='$anchor'>$title</a></th></tr>
+<tr>
+<th>i</th>
+<th>operation</th>
+<th>time</th>
+<th>#words</th>
+<th>#chars</th>
+<th>where</th>
+<th>shift</th>
+<th>in</th>
+<th>out</th>
+</tr>";
+}
+
+sub getHistHeader
+{
+	my ($anchor, $title) = @_;
+	return "<tr><th><a name='$anchor'>$title</a></th></tr>";
+}
+
+sub sumkeys
+{
+    my $revision = shift;
+    return $revision->{"$INDICATOR:letter-keys"} +
+        $revision->{"$INDICATOR:digit-keys"}+
+        $revision->{"$INDICATOR:white-keys"}+
+        $revision->{"$INDICATOR:symbol-keys"}+
+        $revision->{"$INDICATOR:navigation-keys"}+
+        $revision->{"$INDICATOR:erase-keys"}+
+        $revision->{"$INDICATOR:copy-keys"}+
+        $revision->{"$INDICATOR:cut-keys"}+
+        $revision->{"$INDICATOR:paste-keys"}+
+        $revision->{"$INDICATOR:do-keys"};
 }
