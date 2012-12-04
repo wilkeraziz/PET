@@ -101,12 +101,12 @@ $jobid =~ s/\s+/_/g;
 my @xmlTasks = $reader->find($UNIT);
 @xmlTasks = $reader->find($TASK) unless @xmlTasks;
 
-open (my $OS, ">:utf8", "$html/$per.source.html") or die "Could not write src file\n";
-open (my $OM, ">:utf8", "$html/$per.mt.html") or die "Could not write mt file\n";
-open (my $OP, ">:utf8", "$html/$per.pe.html") or die "Could not write pe file\n";
-open (my $OSUM, ">:utf8", "$per.summary") or die "Could not write summary file\n";
-open (my $OHIS, ">:utf8", "$html/$per.history.html") or die "Could not write history file\n";
-open (my $OOPS, ">:utf8", "$html/$per.operations.html") or die "Could not write history (operations) file\n";
+open (my $OS, ">:utf8", "$html/$jobid.source.html") or die "Could not write src file\n";
+open (my $OM, ">:utf8", "$html/$jobid.mt.html") or die "Could not write mt file\n";
+open (my $OP, ">:utf8", "$html/$jobid.pe.html") or die "Could not write pe file\n";
+open (my $OSUM, ">:utf8", "$jobid.summary") or die "Could not write summary file\n";
+open (my $OHIS, ">:utf8", "$html/$jobid.history.html") or die "Could not write history file\n";
+open (my $OOPS, ">:utf8", "$html/$jobid.operations.html") or die "Could not write history (operations) file\n";
 
 print $OS "
 <html>
@@ -183,12 +183,13 @@ foreach my $xmlTask (@xmlTasks){
 	my ($src) = $xmlTask->find($S);
 	my ($mt) = $xmlTask->find($MT);
 	my $producer = $mt->attr($PRODUCER) if $mt;
-	my $srctext = sprintf("%s", $src->content_list);
-	$srctext = parseHTML($srctext) if $html;
-	my $mttext = sprintf("%s", $mt->content_list) if $mt;
-	$mttext = parseHTML($mttext) if $html;
+	my $srctext = sprintf("%s", join(' ', $src->content_list()));
+    #$srctext = parseHTML($srctext) if $stripHTML;
+	my $mttext = sprintf("%s", join(' ', $mt->content_list())) if $mt;
+    #$mttext = parseHTML($mttext) if $stripHTML;
 	my $revision = getCurrentRevision($type, $xmlTask, $mttext);
 	my $petext = $revision->{$PE};
+
 	my ($hter, $badchunks, $chunks) = getHTER($id, $petext, $mttext) if $type eq 'pe';
 	#detectShifts($revision->{changes});
 	my ($oerWord, $oerLen, $oerTime, $timeByTypeOp) = observedNumberOfEdits($revision->{changes});
@@ -325,6 +326,12 @@ sub getTokens
 	return scalar(split(/\s+/, $str));
 }
 
+sub content_list_to_str
+{
+    my $xml = shift;
+    return sprintf("%s", $xml->content_list());
+}
+
 sub getCurrentRevision
 {
 	my ($unitType, $xml, $mttext) = @_;
@@ -339,6 +346,8 @@ sub getCurrentRevision
 	foreach my $annotation (@annotations){
 		my $r = $annotation->attr($REVISION);
 		my ($pe) = $annotation->find($OUT_TAG);
+        my $petext = content_list_to_str($pe);
+
 		my @indicators = $annotation->find($INDICATOR);
 		my $minchanges = $skipChanges->{$unitType};
 		$minchanges = $skipChanges->{fix} if $r > 1;
@@ -346,7 +355,7 @@ sub getCurrentRevision
 		foreach my $indicator (@indicators){
 			my $id = $indicator->attr($ID);
 			my $type = $indicator->attr($TYPE);
-			my $value = sprintf("%s", $indicator->content_list);
+			my $value = sprintf("%s", join(' ', $indicator->content_list()));
 			$value = strToSeconds($value) if $type eq 'time';
 			$value = toBoolean($value) if $type eq 'flag';
 			if ($type eq 'time' or $type eq 'count'){
@@ -368,15 +377,15 @@ sub getCurrentRevision
 			my ($score) = $assessment->find("score");
 			my $value;
 			if (defined $score){
-				$value = sprintf("%s", $score->content_list);
+				$value = sprintf("%s", join(' ', $score->content_list()));
 				$value =~ s/\s+/_/g;
 			}
 			$features->{$ASSESSMENT} = {} unless $features->{$ASSESSMENT};
 			$features->{$ASSESSMENT}->{$id} = $value;
 		}
 		if ($r == $n){
-			$features->{"$PE"} = sprintf("%s", $pe->content_list) if $pe;
-			$features->{"$PE"} = parseHTML($features->{"$PE"}) if $html;
+			$features->{"$PE"} = $petext if $pe;
+            #$features->{"$PE"} = parseHTML($features->{"$PE"}) if $stripHTML;
 		}
 	}
 	return $features;
@@ -386,7 +395,7 @@ sub parseChange
 {
 	my ($indicator, $op, $type, $mt) = @_;
 	my $edit = {};
-    print "$op: ", $mt, "\n";
+    #print "$op: ", $mt, "\n";
     if ($type eq 'change'){
         my $id = $indicator->attr('id');
         my $elapsed = $indicator->attr('elapsed');
@@ -407,7 +416,7 @@ sub parseChange
         } elsif ($id eq 'assignment'){
             $mt = $edit->{in};
         }
-        print "\t$id: ", $mt, "\n";
+        #print "\t$id: ", $mt, "\n";
         
     } elsif ($type eq 'wrap'){
         my ($first, $second) = $indicator->find('action');
@@ -434,19 +443,19 @@ sub parseChange
         }
         if ($id1 eq 'insertion'){
             substr ($mt, $offset1, 0, $text1); # ins
-            print "\t", $mt, "\n";
+            #print "\t", $mt, "\n";
             substr ($mt, $offset2, $length2, ''); #del
-            print "\t", $mt, "\n";
+            #print "\t", $mt, "\n";
         } else{
             substr ($mt, $offset1, $length1, ''); #del
-            print "\t", $mt, "\n";
+            #print "\t", $mt, "\n";
             substr ($mt, $offset2, 0, $text2); # ins
-            print "\t", $mt, "\n";
+            #print "\t", $mt, "\n";
         }
     } else {
         die "Not sure what to do with indicator of type: $type\n";
     }
-    print "final: $mt\n";
+    #print "final: $mt\n";
     return ($edit, $mt);
 }
 

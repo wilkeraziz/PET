@@ -40,11 +40,11 @@ while (chomp(my $line = <>)){
 	my ($job, $who, $id, $type, $status, $producer, @others) = split(/\s+/, $line);
 	print "<tr>
 	<td><a name='$job.$id'>$job</a></td>
-	<td><a href='$dir/$job.per.pe.html#$id.$producer.$who'>$who</a> (<a href='$dir/$job.per.operations.html#$id.$type.$producer.$who'>o</a>, <a href='$dir/$job.per.history.html#$id.$type.$producer.$who'>h</a>)</td>
-	<td><a href='$dir/$job.per.source.html#$id'>$id</a></td>
+	<td><a href='$dir/$job.pe.html#$id.$producer.$who'>$who</a> (<a href='$dir/$job.operations.html#$id.$type.$producer.$who'>o</a>, <a href='$dir/$job.history.html#$id.$type.$producer.$who'>h</a>)</td>
+	<td><a href='$dir/$job.source.html#$id'>$id</a></td>
 	<td>$type</td>
 	<td>$status</td>
-	<td><a href='$dir/$job.per.mt.html#$id.$producer'>$producer</a></td>
+	<td><a href='$dir/$job.mt.html#$id.$producer'>$producer</a></td>
 	";
 	print "\t<td>$_</td>\n" foreach (@others);
 	print "</tr>";
