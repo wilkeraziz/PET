@@ -10,6 +10,8 @@
  */
 package pet.frontend;
 
+import java.awt.event.MouseEvent;
+import javax.swing.event.CaretEvent;
 import pet.frontend.components.UnitGUI;
 import pet.frontend.components.AbstractUnitGUI;
 import pet.frontend.components.EditableUnitGUI;
@@ -27,6 +29,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.util.ArrayList;
@@ -48,6 +51,7 @@ import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.CaretListener;
 import org.apache.commons.collections.keyvalue.MultiKey;
 import org.joda.time.DateTime;
 import pet.annotation.AssessmentChoice;
@@ -68,6 +72,7 @@ import pet.frontend.util.DragFromAndDropToTextHandler;
 import pet.frontend.util.WaitingUntilPostEditingStarts;
 import pet.io.XMLJobWriter;
 import pet.signal.PETCommandEvent;
+import pet.signal.PETCursorEvent;
 import pet.signal.PETEditOperationEvent;
 import pet.signal.PETFlowEvent;
 import pet.signal.PETKeystrokeEvent;
@@ -137,6 +142,7 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
     private final static Color GREEN = new Color(0, 153, 0);
     private int lastSave = 0;
     private final boolean autoSave;
+    private final int autoSaveMemory;
     private final List<WaitingUntilPostEditingStarts> waitingPEStart;
     private final PopupMenuFactory menuFactory;
     private final List<MultiKey> scrollers;
@@ -164,6 +170,7 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
         this.userSpaceController = userSpaceController;
         this.timeStamped = timeStamped;
         this.autoSave = ContextHandler.autoSave();
+        this.autoSaveMemory = ContextHandler.autoSaveMemory();
         this.sentencesByPage = ContextHandler.sentencesByPage();
         this.editablePosition = ContextHandler.editablePosition();
         this.setTitle(job.getId() + " by " + SettingsHandler.getUser());
@@ -253,8 +260,24 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
             }
         });
 
+        /*this.addMouseMotionListener(new MouseMotionListener() {
+        
+        @Override
+        public void mouseDragged(MouseEvent me) {
+        
+        }
+        
+        @Override
+        public void mouseMoved(MouseEvent me) {
+        int mouseX= me.getX();
+        int mouseY= me.getY();
+        System.out.println(mouseX + "," + mouseY);
+        }
+        });*/
+
         findBestStartPosition();
         btnNext.requestFocusInWindow();
+
 
     }
 
@@ -546,6 +569,15 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
                     @Override
                     public void keyTyped(java.awt.event.KeyEvent evt) {
                         tgtSentenceKeyTyped(evt);
+                    }
+                });
+                tgt.addCaretListener(new CaretListener() {
+
+                    @Override
+                    public void caretUpdate(CaretEvent ce) {
+
+                        //System.out.println(ce.toString());
+                        ContextHandler.signalManager().fire(new PETCursorEvent(ce.getMark(), ce.getDot()));
                     }
                 });
 
@@ -993,29 +1025,38 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
         return editing.getSnapshot(target);
     }
 
-    private void writeXMLTaskResults(final boolean auto) {
+    private String makeOutputFileName(final String suffix) {
         String fileName = "";
+        if (timeStamped) {
+            fileName = SettingsHandler.getWorkspace()
+                    + File.separator + SettingsHandler.getUser()
+                    + File.separator + job.getId()
+                    + "." + new DateTime(System.currentTimeMillis()).toString("ddMMyy_hhmmss")
+                    + FileHandler.RESULT_SUFIX + suffix;
+        } else {
+            fileName = SettingsHandler.getWorkspace()
+                    + File.separator + SettingsHandler.getUser()
+                    + File.separator + job.getId()
+                    + FileHandler.RESULT_SUFIX + suffix;
+        }
+        return fileName;
+    }
+
+    private void writeXMLTaskResults(final boolean auto) {
+        
         final int done = statusController.getDone();
         if (!auto || done > 0) {
             String suffix = "";
             if (auto) {
                 suffix = "." + Integer.toString(done);
             }
-            if (timeStamped) {
-                fileName = SettingsHandler.getWorkspace()
-                        + File.separator + SettingsHandler.getUser()
-                        + File.separator + job.getId()
-                        + "." + new DateTime(System.currentTimeMillis()).toString("ddMMyy_hhmmss")
-                        + FileHandler.RESULT_SUFIX + suffix;
-            } else {
-                fileName = SettingsHandler.getWorkspace()
-                        + File.separator + SettingsHandler.getUser()
-                        + File.separator + job.getId()
-                        + FileHandler.RESULT_SUFIX + suffix;
-            }
+            final String fileName = makeOutputFileName(suffix);
             final File file = new File(fileName);
             final XMLJobWriter writer = new XMLJobWriter();
             writer.save(job, statusController.getJobStatus(), statusController.getDone(), tasks, file);
+            if ((done - autoSaveMemory) > 0) {
+                new File(makeOutputFileName('.' + Integer.toString(done - autoSaveMemory))).delete();
+            }
         }
     }
 
@@ -1199,19 +1240,20 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
      * @param evt 
      */
     private void tgtSentenceKeyTyped(java.awt.event.KeyEvent evt) {
+        final int offset = editingTgt.underlying().getCaretPosition();
         if (!Character.isISOControl(evt.getKeyChar())) { //if it's a normal char
-            ContextHandler.signalManager().fire(new PETKeystrokeEvent(evt.getKeyChar()));
+            ContextHandler.signalManager().fire(new PETKeystrokeEvent(evt.getKeyChar(), offset));
         } else { // if it's a command
             if (!evt.isControlDown()) { // except for those prefixed by 'ctrl', as they cannot be reliably captured in KeyTyped handlers
                 switch (evt.getKeyChar()) {
                     case KeyEvent.VK_DELETE:
-                        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.DELETE));
+                        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.DELETE, offset));
                         break;
                     case KeyEvent.VK_BACK_SPACE:
-                        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.BACKSPACE));
+                        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.BACKSPACE, offset));
                         break;
                     case KeyEvent.VK_TAB:
-                        ContextHandler.signalManager().fire(new PETKeystrokeEvent(evt.getKeyChar()));
+                        ContextHandler.signalManager().fire(new PETKeystrokeEvent(evt.getKeyChar(), offset));
                         break;
                 }
             }
@@ -1226,73 +1268,74 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
      * @param evt 
      */
     private void tgtSentenceKeyPressed(java.awt.event.KeyEvent evt) {
+        final int offset = editingTgt.underlying().getCaretPosition();
         if (evt.isControlDown()) { // for instance the commands prefixed by 'ctrl'
             switch (evt.getKeyCode()) {
                 case KeyEvent.VK_DOWN:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.DOWN));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.DOWN, offset));
                     break;
                 case KeyEvent.VK_UP:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.UP));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.UP, offset));
                     break;
                 case KeyEvent.VK_LEFT:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.LEFT));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.LEFT, offset));
                     break;
                 case KeyEvent.VK_RIGHT:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.RIGHT));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.RIGHT, offset));
                     break;
                 case KeyEvent.VK_HOME:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.HOME));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.HOME, offset));
                     break;
                 case KeyEvent.VK_END:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.END));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.END, offset));
                     break;
                 case KeyEvent.VK_PAGE_DOWN:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGDOWN));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGDOWN, offset));
                     break;
                 case KeyEvent.VK_PAGE_UP:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGUP));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGUP, offset));
                     break;
                 case KeyEvent.VK_C:
-                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.COPY));
+                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.COPY, offset));
                     break;
                 case KeyEvent.VK_X:
-                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.CUT));
+                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.CUT, offset));
                     break;
                 case KeyEvent.VK_V:
-                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.PASTE));
+                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.PASTE, offset));
                     break;
                 case KeyEvent.VK_Z:
-                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.UNDO));
+                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.UNDO, offset));
                     break;
                 case KeyEvent.VK_Y:
-                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.REDO));
-                    break;                
+                    ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.REDO, offset));
+                    break;
             }
         } else {
             switch (evt.getKeyCode()) {
                 case KeyEvent.VK_DOWN:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.DOWN));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.DOWN, offset));
                     break;
                 case KeyEvent.VK_UP:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.UP));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.UP, offset));
                     break;
                 case KeyEvent.VK_LEFT:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.LEFT));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.LEFT, offset));
                     break;
                 case KeyEvent.VK_RIGHT:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.RIGHT));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.RIGHT, offset));
                     break;
                 case KeyEvent.VK_HOME:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.HOME));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.HOME, offset));
                     break;
                 case KeyEvent.VK_END:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.END));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.END, offset));
                     break;
                 case KeyEvent.VK_PAGE_DOWN:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGDOWN));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGDOWN, offset));
                     break;
                 case KeyEvent.VK_PAGE_UP:
-                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGUP));
+                    ContextHandler.signalManager().fire(new PETNavigationEvent(PETNavigationEvent.NavigationType.PGUP, offset));
                     break;
             }
         }

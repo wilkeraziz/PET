@@ -55,6 +55,7 @@ public class ConfigReader {
     private boolean keystrokes = false;
     private boolean logChanges = false;
     private boolean autoSave = false;
+    private int autoSaveMemory = -1;
     private boolean skipAssessmentOnAutoAccept = false;
     private boolean skipAssessmentOnDiscard = false;
     private String hideIfNotEditing = "never";
@@ -209,8 +210,11 @@ public class ConfigReader {
                     impossible = true;
                     continue;
                 }
-                if (line.equals("autoSave")) {
+                if (line.equals("autoSave") || line.startsWith("autoSave=")) {
                     autoSave = true;
+                    if (line.startsWith("autoSave=")){
+                        autoSaveMemory = Integer.parseInt(line.substring(line.indexOf('=') + 1));
+                    }
                     continue;
                 }
                 if (line.equals("enableUnchanged")) {
@@ -505,6 +509,7 @@ public class ConfigReader {
                 showProducer,
                 assessing,
                 autoSave,
+                autoSaveMemory,
                 postEditingAssessments,
                 translationAssessments,
                 assessmentsByPage,

@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.text.DefaultEditorKit;
 import pet.config.ContextHandler;
 import pet.signal.PETCommandEvent;
+import pet.usr.handler.UnitHandler;
 
 
 public class PasteAction extends DefaultEditorKit.CutAction {
@@ -17,8 +18,8 @@ public class PasteAction extends DefaultEditorKit.CutAction {
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.PASTE));
+    public void actionPerformed(ActionEvent e) {        
+        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.PASTE, UnitHandler.getActiveTarget().underlying().getCaretPosition()));
         super.actionPerformed(e);
     }
 }

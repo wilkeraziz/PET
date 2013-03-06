@@ -606,6 +606,7 @@ public class PEJMain extends javax.swing.JFrame {
 
 
             options.addOption(OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("Add a property to a job [multiple allowed]").create("D"));
+            options.addOption(OptionBuilder.withArgName("tsv").hasArg().isRequired().withDescription("Tab separated file: segid sysid source MT").create("tsv"));
 
             HelpFormatter formatter = new HelpFormatter();
 
@@ -670,6 +671,9 @@ public class PEJMain extends javax.swing.JFrame {
                         for (final List<String> group : groups) {
                             builder.addSegmentsWithAttributes(SegmentType.T, new File(group.get(0)), new File(group.get(1)));
                         }
+                    }
+                    if (line.hasOption("tsv")) {
+                        builder.loadFromTabSeparatedFile(line.getOptionValue("tsv"));
                     }
                     builder.build();
                     System.out.println(builder.getNUnits() + " units were written to " + builder.getPathToPEJ());

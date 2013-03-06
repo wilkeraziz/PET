@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import pet.frontend.util.VisualLogger;
 import pet.signal.PETCommandEvent;
+import pet.signal.PETCursorEvent;
 import pet.signal.PETEditOperationEvent;
 import pet.signal.PETEvent;
 import pet.signal.PETFlowEvent;
@@ -43,6 +44,8 @@ public class EventParser {
                 return new PETEditOperationEvent(xml);
             } else if (type.equals(PETFlowEvent.TYPE)) {
                 return new PETFlowEvent(xml);
+            } else if (type.equals(PETCursorEvent.TYPE)) {
+                return new PETCursorEvent(xml);
             } else {
                 System.err.println("Skipping unknown event: " + type);
                 VisualLogger.warn("Skipping unknown event: " + type);

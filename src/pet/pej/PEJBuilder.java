@@ -167,6 +167,44 @@ public class PEJBuilder {
         }
         return this;
     }
+    
+    public PEJBuilder loadFromTabSeparatedFile(final String file) throws FileNotFoundException, IOException, FormatException {
+
+        final BufferedReader text = new BufferedReader(new FileReader(file));
+        String content = null;
+        int n = 1;
+        while ((content = text.readLine()) != null) {
+            if (!content.trim().isEmpty()) {
+                Element unit = units.get(n);
+
+                if (unit == null) {
+                    unit = xml.createElement(ParseHandler.UNIT);
+                    units.put(n, unit);
+                }
+                String[] fields = content.split("\t");
+                final String segid = fields[0];
+                final String sysid = fields[1];
+                final String src = fields[2];
+                final String mt = fields[3];
+                
+                final Element sSnt = xml.createElement(SegmentType.S.toString());
+                sSnt.setAttribute("producer", "wmt12");
+                sSnt.setTextContent(src);
+                unit.appendChild(sSnt);
+                
+                final Element tSnt = xml.createElement(SegmentType.T.toString());
+                tSnt.setAttribute("producer", sysid);
+                tSnt.setTextContent(mt);
+                unit.appendChild(tSnt);
+                
+                unit.setAttribute("id", segid);
+                
+                job.appendChild(unit);
+            }
+            n++;
+        }
+        return this;
+    }
 
     /**
      * Gives one the chance to check whether the current units miss ids.

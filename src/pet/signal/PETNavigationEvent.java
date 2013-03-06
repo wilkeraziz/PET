@@ -6,6 +6,7 @@ package pet.signal;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import pet.annotation.xml.ParseHandler;
 
 /**
  *
@@ -27,15 +28,19 @@ public class PETNavigationEvent extends PETAbstractEvent{
     }
     
     private final NavigationType command;
+    private final int offset;
+    //private final int destination;
     
-    public PETNavigationEvent(final NavigationType command){
+    public PETNavigationEvent(final NavigationType command, final int offset){
         super();
         this.command = command;
+        this.offset = offset;
     }
     
     public PETNavigationEvent(final Element xml){
         super(xml);
         this.command = NavigationType.valueOf(xml.getTextContent());
+        this.offset = Integer.parseInt(xml.getAttribute(ParseHandler.OFFSET));
     }
     
     @Override
@@ -47,6 +52,10 @@ public class PETNavigationEvent extends PETAbstractEvent{
         return command;
     }
     
+    public int getOffset(){
+        return offset;
+    }
+    
     @Override
     public String toString(){
         return command.toString();
@@ -55,6 +64,7 @@ public class PETNavigationEvent extends PETAbstractEvent{
     @Override
     public void writeXML(final Document xml, final Element xmlEvent, final long t0){
         super.writeXML(xml, xmlEvent, t0);
+        xmlEvent.setAttribute(ParseHandler.OFFSET, Integer.toString(offset));
         xmlEvent.setTextContent(toString());
     }
     

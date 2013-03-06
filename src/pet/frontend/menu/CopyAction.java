@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.text.DefaultEditorKit;
 import pet.config.ContextHandler;
 import pet.signal.PETCommandEvent;
+import pet.usr.handler.UnitHandler;
 
 
 public class CopyAction extends DefaultEditorKit.CutAction {
@@ -18,7 +19,7 @@ public class CopyAction extends DefaultEditorKit.CutAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.COPY));
+        ContextHandler.signalManager().fire(new PETCommandEvent(PETCommandEvent.CommandType.COPY, UnitHandler.getActiveTarget().underlying().getCaretPosition()));
         super.actionPerformed(e);
     }
 }

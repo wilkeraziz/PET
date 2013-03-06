@@ -50,6 +50,7 @@ public class ContextHandler {
     private final static ThreadLocal<Integer> assessmentsByPage = new ThreadLocal<Integer>();
     private final static ThreadLocal<Boolean> showReference = new ThreadLocal<Boolean>();
     private final static ThreadLocal<Boolean> autoSave = new ThreadLocal<Boolean>();
+    private final static ThreadLocal<Integer> autoSaveMemory = new ThreadLocal<Integer>();
     private final static ThreadLocal<String> workspace = new ThreadLocal<String>();
     private final static ThreadLocal<String> source = new ThreadLocal<String>();
     private final static ThreadLocal<String> target = new ThreadLocal<String>();
@@ -115,6 +116,7 @@ public class ContextHandler {
             final EditableUnitGUI.Tip showProducer,
             final boolean assessing,
             final boolean autoSave,
+            final int autoSaveMemory,
             final List<AssessmentDescriptor> peAssessments,
             final List<AssessmentDescriptor> htAssessments,
             int assessmentsByPage,
@@ -175,6 +177,7 @@ public class ContextHandler {
         ContextHandler.showProducer.set(showProducer);
         ContextHandler.assessing.set(assessing);
         ContextHandler.autoSave.set(autoSave);
+        ContextHandler.autoSaveMemory.set(autoSaveMemory);
         ContextHandler.peAssessments.set(peAssessments);
         ContextHandler.htAssessments.set(htAssessments);
         ContextHandler.assessmentsByPage.set(assessmentsByPage);
@@ -281,6 +284,7 @@ public class ContextHandler {
         assessmentsByPage.remove();
         externalInfoParams.remove();
         autoSave.remove();
+        autoSaveMemory.remove();
         sentencesByPage.remove();
         editablePosition.remove();
         editingUndoManager.remove();
@@ -415,6 +419,10 @@ public class ContextHandler {
 
     public static boolean autoSave() {
         return autoSave.get();
+    }
+    
+    public static int autoSaveMemory() {
+        return autoSaveMemory.get();
     }
 
     public static List<AssessmentDescriptor> peAssessments() {

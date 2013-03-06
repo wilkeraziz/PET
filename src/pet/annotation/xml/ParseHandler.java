@@ -40,10 +40,13 @@ public class ParseHandler {
     public static final String PE_TYPE = "pe";
     public static final String HT_TYPE = "ht";
     public static final String OFFSET = "offset";
+    public static final String CURSOR = "cursor";
     public static final String LENGTH = "length";
     public static final String ELAPSED = "elapsed";
     public static final String T0 = "t0";
     public static final String T = "t";
     public static final String IN = "in";
     public static final String OUT = "out";
+    public static final String DOT = "dot";
+    public static final String MARK = "mark";
 }

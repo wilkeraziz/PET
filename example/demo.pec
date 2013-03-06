@@ -12,8 +12,10 @@ source=en
 # Target language
 target=es
 
-# You may want to automatically save progress
-#autoSave
+# You may want to automatically save progress and keep all intermediate files
+# autoSave
+# or keep only some of them
+autoSave=5
 
 # You may want to change the annotation page
 # how many sentences get displayed
