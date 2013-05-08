@@ -4,10 +4,12 @@ Post-Editing Tool.
 
 ## Build
 
+Requires `ant` and `jdk 1.6`.
+
     ant compile jar javadoc
 
 
-Note that on windows ant echos a command line with the classpath set. On windows you can use run.bat and pej.bat to run PET/PEJ since those files already set the classpath variable for you.
+Note that on windows ant echos a command line with the classpath set. The files run.bat and pej.bat already set the classpath variable for you, they are the preferred way to run PET/PEJ on Windows.
 
 ## Usage
 
