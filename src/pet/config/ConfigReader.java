@@ -87,6 +87,7 @@ public class ConfigReader {
     private String source = "f";
     private String target = "e";
     private boolean hideLeftBar = false;
+    private boolean maximiseAssessmentPage = false;
 
     public ConfigReader(final FileAdapter config) {
         this.config = config;
@@ -475,6 +476,9 @@ public class ConfigReader {
                     showMTPreview = true;
                     continue;
                 }
+                if (line.equals("maximiseAssessmentPage") || line.equals("maximizeAssessmentPage")) {
+                    maximiseAssessmentPage = true;
+                }
             }
             if (workspace == null) {
                 throw new InvalidConfigException("A workspace is required: set 'workspace=<path>' in the config file.");
@@ -544,6 +548,7 @@ public class ConfigReader {
                 t2t,
                 t2s,
                 showMTPreview,
-                hideLeftBar);
+                hideLeftBar,
+                maximiseAssessmentPage);
     }
 }

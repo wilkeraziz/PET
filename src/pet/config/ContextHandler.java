@@ -92,6 +92,7 @@ public class ContextHandler {
     private final static ThreadLocal<List<PETDataBase>> t2s = new ThreadLocal<List<PETDataBase>>();
     private final static ThreadLocal<Boolean> showMTPreview = new ThreadLocal<Boolean>();
     private final static ThreadLocal<Boolean> hideLeftBar = new ThreadLocal<Boolean>();
+    private final static ThreadLocal<Boolean> maximiseAssessmentPage = new ThreadLocal<Boolean>();
 
     public static void initialize(final String id,
             final String workspace,
@@ -151,7 +152,8 @@ public class ContextHandler {
             final List<PETDataBase> t2t,
             final List<PETDataBase> t2s,
             final boolean showMTPreview,
-            final boolean hideLeftBar) {
+            final boolean hideLeftBar,
+            final boolean maximiseAssessmentPage) {
         //release();
 
         ContextHandler.contextId.set(id);
@@ -217,6 +219,7 @@ public class ContextHandler {
         ContextHandler.t2s.set(t2s);
         ContextHandler.showMTPreview.set(showMTPreview);
         ContextHandler.hideLeftBar.set(hideLeftBar);
+        ContextHandler.maximiseAssessmentPage.set(maximiseAssessmentPage);
 
         ContextHandler.flowManager().addListener(new PETFlowListener() {
 
@@ -303,6 +306,7 @@ public class ContextHandler {
         t2s.remove();
         showMTPreview.remove();
         hideLeftBar.remove();
+        maximiseAssessmentPage.remove();
     }
 
     public static String contextId() {
@@ -555,5 +559,9 @@ public class ContextHandler {
 
     public static PETFlowManager flowManager() {
         return flowManager.get();
+    }
+    
+    public static boolean maximiseAssessmentPage(){
+        return maximiseAssessmentPage.get();
     }
 }

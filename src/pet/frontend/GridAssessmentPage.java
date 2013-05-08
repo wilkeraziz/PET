@@ -12,6 +12,7 @@ package pet.frontend;
 
 import pet.frontend.util.MyFocusTraversalPolicy;
 import java.awt.Component;
+import java.awt.GraphicsEnvironment;
 import pet.usr.adapter.AssessmentListener;
 import java.util.ArrayList;
 
@@ -61,8 +62,10 @@ public class GridAssessmentPage extends javax.swing.JDialog {
 
         initComponents();
         header.setLayout(new SpringLayout());  //new GridLayout(0, 1, 2, 1));
-        body.setLayout(new SpringLayout());
-
+        body.setLayout(new SpringLayout()); 
+        if (ContextHandler.maximiseAssessmentPage()){
+            this.setBounds(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds());
+        } 
 
         nAssessments = descriptors.size();
 
@@ -96,7 +99,10 @@ public class GridAssessmentPage extends javax.swing.JDialog {
                 ((JList) answers).setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             }
             combos.add(answers);
-            body.add(answers);
+            body.add(new JScrollPane(answers,
+                    ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                    ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+            //body.add(answers);
             focusOrder.add(answers);
             final JTextPane comment = new JTextPane();
             comments.add(comment);

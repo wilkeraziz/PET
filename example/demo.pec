@@ -44,6 +44,7 @@ translationAssessment=difficulty|How hard was to translate the source?|1|1. Easy
 postEditingAssessment=accuracy|How accurate was the MT?|1|0|1|2|3|4
 # You may present multiple questions per page
 assessmentsByPage=2
+#maximiseAssessmentPage
 
 # You can disable assessments switching on the following flag:
 disableAssessment

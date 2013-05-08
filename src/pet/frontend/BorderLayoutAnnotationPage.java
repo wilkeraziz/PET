@@ -955,6 +955,7 @@ public class BorderLayoutAnnotationPage extends javax.swing.JFrame implements Bi
                         this,
                         AssessmentSelector.getSummary(snapshot),
                         selected);
+                
                 dialog.setVisible(true);
             }
             ContextHandler.signalManager().fire(new PETFlowEvent(PETFlowEvent.ActionType.ASSESSING_END));

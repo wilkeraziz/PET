@@ -103,7 +103,7 @@ public class MetaHandler {
         } catch (final Exception e) {
             System.out.println(pecmeta.getFile().getAbsolutePath() + " was not found, PET will load the first .pec file available");
         }
-        final File defFile = new File(dir);
+        final File defFile = new File(dir +  File.separator + def);
         if (!defFile.exists() || !defFile.getPath().endsWith(FileHandler.CONFIG_SUFIX)){
             def = null;
         }
