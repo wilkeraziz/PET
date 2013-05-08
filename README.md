@@ -6,6 +6,9 @@ Post-Editing Tool.
 
     ant compile jar javadoc
 
+
+Note that on windows ant echos a command line with the classpath set. On windows you can use run.bat and pej.bat to run PET/PEJ since those files already set the classpath variable for you.
+
 ## Usage
 
 For a standard run:
