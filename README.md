@@ -6,8 +6,8 @@ Post-Editing Tool.
 
 Requires `maven2` and `jdk 1.6`.
 
-    maven compile
-    maven package
+    mvn compile
+    mvn package
 
 This will create a jar with dependencies under `target`.
 Use `run.sh (run.bat)` and `pej.sh (pej.bat)` to start the tools.
