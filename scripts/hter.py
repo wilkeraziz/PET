@@ -13,6 +13,19 @@ class HTERScore(float):
         new.words = words
         return new
 
+class NULLHTER(float):
+
+    def __new__(cls):
+        new = super(NULLHTER, cls).__new__(cls, 0)
+        new.I = 0
+        new.D = 0
+        new.S = 0
+        new.Sh = 0
+        new.WSh = 0
+        new.errors = 0
+        new.words = 0
+        return new
+
 
 class HTER(object):
 

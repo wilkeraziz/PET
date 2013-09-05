@@ -1,7 +1,7 @@
 import re
 import os
 import sys
-from hter import HTER
+from hter import HTER, NULLHTER
 from codecs import open
 from nltk.tokenize import word_tokenize, wordpunct_tokenize
 import argparse
@@ -45,8 +45,9 @@ def cmd_parse():
     parser = argparse.ArgumentParser(description="Parse PET's PER files")
     parser.add_argument("who", type=str, help="annotator")
     parser.add_argument("input", type=str, help="per file")
-    parser.add_argument("hter", type=str, help="path to HTER jar")
+    parser.add_argument("--hter", type=str, help="path to HTER jar")
     parser.add_argument("--tmp", type=str, default='tmp', help="a temp dir to compute HTER")
+    parser.add_argument("--assessments", type=str, help="a comma separated list of assessment ids")
     args = parser.parse_args()
     if not os.path.exists(args.tmp):
         os.makedirs(args.tmp)
@@ -112,6 +113,7 @@ class Indicator(object):
             value = value in ('True', 'true', 'Yes', 'yes', '1')
         return Indicator(iid, itype, value)
 
+
 class Segment(object):
 
     S, MT, PE, HT = 'S', 'MT', 'PE', 'HT'
@@ -152,8 +154,13 @@ class Segment(object):
         return Segment(text, producer, xml.tagName)
 
 class Unit(object):
+    
+    EmptyMT = Segment('','<none>','MT')
+    EmptyS = Segment('','<none>','S')
+    EmptyPE = Segment('','<none>','PE')
+    EmptyHT = Segment('','<none>','HT')
 
-    def __init__(self, uid, sources, mts, pes, assessments, indicators, hter = None):
+    def __init__(self, uid, sources, mts, pes, assessments, indicators, hter = NULLHTER()):
         self._id = uid
         self._sources = sources
         self._mts = mts
@@ -162,7 +169,7 @@ class Unit(object):
         self._indicators = indicators
         self._slen = 0 if len(sources) == 0 else sum(len(s) for s in sources) / len(sources)
         self._mlen = 0 if len(mts) == 0 else sum(len(m) for m in mts) / len(mts)
-        self._plen = len(pes[-1])
+        self._plen = 0 if len(pes) == 0 else len(pes[-1]) 
         self._hter = hter
 
     def __str__(self):
@@ -175,10 +182,10 @@ class Unit(object):
                 self.editingPerSToken/1000)
 
     def source0(self):
-        return self._sources[0]
+        return self._sources[0] if self._sources else Unit.EmptyS
 
     def mt0(self):
-        return self._mts[0]
+        return self._mts[0] if self._mts else Unit.EmptyMT
 
     @property
     def hter(self):
@@ -190,7 +197,7 @@ class Unit(object):
 
     @property
     def pe(self):
-        return self._pes[-1]
+        return self._pes[-1] if self._pes else Unit.EmptyPE
 
     @property
     def editingPerSToken(self):
@@ -294,6 +301,9 @@ class Unit(object):
         for mt in xml.getElementsByTagName('MT'):
             m = Segment.parse(mt)
             mts.append(m)
+        for ht in xml.getElementsByTagName('HT'):
+            h = Segment.parse(ht)
+            pes.append(h)
         for pe in xml.getElementsByTagName('PE'):
             p = Segment.parse(pe)
             pes.append(p)
@@ -304,13 +314,12 @@ class Unit(object):
             i = Indicator.parse(indicator)
             indicators[i.id].append(i)
 
-        assert len(pes) > 0, 'Unit %d has no PEs' % uid
-        if hter is None:
-            return Unit(uid, sources, mts, pes, assessments, indicators)
-        else:
+        #assert len(pes) > 0, 'Unit %d has no PEs' % uid
+        if len(mts) > 0 and len(pes) > 0 and hter is not None:
             return Unit(uid, sources, mts, pes, assessments, indicators, hter.hter(mts[-1].text, pes[-1].text))
+        else:
+            return Unit(uid, sources, mts, pes, assessments, indicators)
 
-        
 
 class PER(object):
 
@@ -330,19 +339,34 @@ class PER(object):
         return self._who
 
 def main(args):
-    hter = HTER(args.hter, args.tmp)
-    print 'who\tsrc\tsys\ttime\tslen\tmlen\tplen\tletters\tdigits\tspaces\tsymbols\tnavigation\terase\tcommands\tvisible\tkeystrokes\tallkeys\tinsertions\tdeletions\tsubstitutions\tshifts\ttag\thter\thter_ins\thter_del\thter_sub\thter_shift\thter_wdsh\thter_errors\thter_words\tS\tMT\tPE'
+
+    hter = HTER(args.hter, args.tmp) if args.hter else None
+
+    assessments = args.assessments.split(',') if args.assessments else []
+    columns = 'who\ttype\tsrc\tsys\ttime\tslen\tmlen\tplen\tletters\tdigits\tspaces\tsymbols\tnavigation\terase\tcommands\tvisible\tkeystrokes\tallkeys\tinsertions\tdeletions\tsubstitutions\tshifts'.split('\t')
+    if hter:
+        columns.extend('hter\thter_ins\thter_del\thter_sub\thter_shift\thter_wdsh\thter_errors\thter_words'.split('\t'))
+    if assessments:
+        columns.append('assessing')
+        columns.extend(assessments)
+    columns.extend('S\tMT\tPE'.split())
+
+    print '\t'.join(columns)
+
     for path in args.input.split(','):
         print >> sys.stderr, 'Parsing', path
         per = PER(path, args.who, hter)
         for u in per:
-            row = [per.who, u.id, u.pe.producer, u.editing, u.slen, u.mlen, u.plen, 
+            row = [per.who, u.pe.type, u.id, u.pe.producer, u.editing, u.slen, u.mlen, u.plen, 
                     u.letters, u.digits, u.spaces, u.symbols, u.navigation, u.erase,
                     u.commands, u.visiblekeys, u.keystrokes, u.allkeys, 
-                    u.insertions, u.deletions, u.substitutions, u.shifts, 
-                    u.assessment('necessity'), 
-                    u.hter, u.hter.I, u.hter.D, u.hter.S, u.hter.Sh, u.hter.WSh, u.hter.errors, u.hter.words,
-                    u.source0().text, u.mt0().text, u.pe.text]
+                    u.insertions, u.deletions, u.substitutions, u.shifts]
+            if hter:
+                row.extend([u.hter, u.hter.I, u.hter.D, u.hter.S, u.hter.Sh, u.hter.WSh, u.hter.errors, u.hter.words])
+            if assessments:
+                row.append(u.assessing)
+                row.extend(u.assessment(aid) for aid in assessments)
+            row.extend([u.source0().text, u.mt0().text, u.pe.text])
             print '\t'.join(str(x) for x in row)
 
 
