@@ -74,8 +74,15 @@ class Assessment(object):
     @classmethod
     def parse(cls, xml):
         criterion = parse_attr(xml, 'id')
+        # compatibility with older versions
+        criterion = '_'.join(criterion.split()).lower()
+        # --------------------------------
+
         value = parse_text(xml.getElementsByTagName('score')[0])
-        value = int(value.split('.')[0])
+        try:
+            value = int(value.split('.')[0])
+        except:
+            value = str(value.split('.')[0])
         return Assessment(criterion, value)
 
 class Indicator(object):
@@ -155,6 +162,8 @@ class Segment(object):
 
 class Unit(object):
     
+    __COMPATIBILITY_ID = 0
+
     EmptyMT = Segment('','<none>','MT')
     EmptyS = Segment('','<none>','S')
     EmptyPE = Segment('','<none>','PE')
@@ -288,7 +297,12 @@ class Unit(object):
 
     @classmethod
     def parse(cls, xml, hter = None):
-        uid = int(parse_attr(xml, 'id'))
+
+        try:
+            uid = int(parse_attr(xml, 'id'))
+        except:
+            Unit.__COMPATIBILITY_ID += 1
+            uid = Unit.__COMPATIBILITY_ID
         status = parse_attr(xml, 'status')
         sources = []
         mts = []
@@ -327,7 +341,15 @@ class PER(object):
         self._xml = xml_parse(path)
         self._who = who
         self._units = []
-        for unit in self._xml.getElementsByTagName('unit'):
+
+        
+        xml_units = self._xml.getElementsByTagName('unit')
+
+        # compatibility with older versions
+        if not xml_units:
+            xml_units = self._xml.getElementsByTagName('task')
+
+        for unit in xml_units:
             self._units.append(Unit.parse(unit, hter))
 
     def __iter__(self):
