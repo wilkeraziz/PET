@@ -1,5 +1,6 @@
 import subprocess as sp
 import os.path
+import codecs
 
 class HTERScore(float):
 
@@ -38,7 +39,7 @@ class HTER(object):
         return '%s (%s)' % (snt, sid)
 
     def write_snts(self, snts, path):
-        with open(path, 'w') as f:
+        with codecs.open(path, 'w', 'utf-8') as f:
             for sid, snt in enumerate(snts):
                 print >> f, self.format_snt(sid + 1, snt)
 

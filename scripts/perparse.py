@@ -4,9 +4,14 @@ import sys
 from hter import HTER, NULLHTER
 from codecs import open
 from nltk.tokenize import word_tokenize, wordpunct_tokenize
+from nltk import clean_html
 import argparse
 import collections
 from xml.dom.minidom import parse as xml_parse
+from HTMLParser import HTMLParser
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 def tomilli(b, v):
     if b == 'd':
@@ -30,8 +35,20 @@ def parse_text(element):
     rc = []
     for node in element.childNodes:
         if node.nodeType == node.TEXT_NODE:
-            rc.append(node.data.encode('utf-8'))
-    return ''.join(rc) #.encode('utf-8')
+            rc.append(node.data)
+    return ''.join(rc)
+
+def parse_html_text(element):
+    rc = []
+    for node in element.childNodes:
+        if node.nodeType == node.TEXT_NODE:
+            rc.append(node.data)
+
+    # join the parts
+    # clean HTML tags
+    # clean extra spaces
+    # unescape HTML codes
+    return HTMLParser().unescape(' '.join(clean_html(' '.join(rc)).split()))
 
 def parse_attr(element, attr):
     return element.getAttribute(attr).encode('utf-8')
@@ -170,7 +187,7 @@ class Segment(object):
 
     @classmethod
     def parse(cls, xml):
-        text = parse_text(xml)
+        text = parse_html_text(xml)
         producer = parse_attr(xml, 'producer')
         return Segment(text, producer, xml.tagName)
 
