@@ -45,7 +45,7 @@ class HTER(object):
     def hter(self, mt, pe):
         self.write_snts([mt], os.path.join(self._tmp, 'mt'))
         self.write_snts([pe], os.path.join(self._tmp, 'pe'))
-        args = [self._jar, 
+        args = ['java', '-jar', self._jar, 
                 '-r', os.path.join(self._tmp, 'pe'), 
                 '-h', os.path.join(self._tmp, 'mt'), 
                 '-N', '-o', 'sum', 
