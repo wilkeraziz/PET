@@ -1,4 +1,5 @@
 import subprocess as sp
+import os.path
 
 class HTERScore(float):
 
@@ -42,15 +43,15 @@ class HTER(object):
                 print >> f, self.format_snt(sid + 1, snt)
 
     def hter(self, mt, pe):
-        self.write_snts([mt], '%s/mt' % self._tmp)
-        self.write_snts([pe], '%s/pe' % self._tmp)
-        cmd = "%s -r %s/pe -h %s/mt -N -o sum -n %s/hter | egrep 'TER'" % (self._jar, self._tmp, self._tmp, self._tmp)
-        proc = sp.Popen(cmd, shell = True, stdout = sp.PIPE, executable = '/bin/bash')
+        self.write_snts([mt], os.path.join(self._tmp, 'mt'))
+        self.write_snts([pe], os.path.join(self._tmp, 'pe'))
+        args = [self._jar, 
+                '-r', os.path.join(self._tmp, 'pe'), 
+                '-h', os.path.join(self._tmp, 'mt'), 
+                '-N', '-o', 'sum', 
+                '-n', os.path.join(self._tmp, 'hter')]
+        proc = sp.Popen(args, stdout = sp.PIPE)
         output = proc.wait()
-        #score, badchunks, chunks = 0, 0, 0
-        #for line in proc.stdout:
-        #    score, badchunks, chunks = line.strip().replace('(','').replace(')','').replace('/', ' ').replace('Total TER: ', '').split()
-        #score, badchunks, chunks = float(score), float(badchunks), float(chunks)
 
         with open('%s/hter.sum' % self._tmp) as f:
             Ins, Del, Sub, Shft, WdSh, NumEr, NumWd, Ter = 0, 0, 0, 0, 0, 0, 0, 0

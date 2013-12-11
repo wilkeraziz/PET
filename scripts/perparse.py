@@ -48,6 +48,7 @@ def cmd_parse():
     parser.add_argument("--hter", type=str, help="path to HTER jar")
     parser.add_argument("--tmp", type=str, default='tmp', help="a temp dir to compute HTER")
     parser.add_argument("--assessments", type=str, help="a comma separated list of assessment ids")
+    parser.add_argument("--comments", type=str, help="file where to write comments to")
     args = parser.parse_args()
     if not os.path.exists(args.tmp):
         os.makedirs(args.tmp)
@@ -56,9 +57,10 @@ def cmd_parse():
 
 class Assessment(object):
 
-    def __init__(self, criterion, value):
+    def __init__(self, criterion, value, comment = ""):
         self._criterion = criterion
         self._value = value
+        self._comment = comment
 
     @property
     def criterion(self):
@@ -67,6 +69,10 @@ class Assessment(object):
     @property
     def value(self):
         return self._value
+
+    @property
+    def comment(self):
+        return self._comment
 
     def __str__(self):
         return '%s: %s' % (self.criterion, self.value)
@@ -83,7 +89,15 @@ class Assessment(object):
             value = int(value.split('.')[0])
         except:
             value = str(value.split('.')[0])
-        return Assessment(criterion, value)
+
+        xml_comment = xml.getElementsByTagName('comment')
+        if xml_comment:
+            comment = parse_text(xml_comment[0])
+            comment = comment.replace("\t", " ").replace("\n", "&newline;")
+        else:
+            comment = ""
+        
+        return Assessment(criterion, value, comment)
 
 class Indicator(object):
 
@@ -225,7 +239,7 @@ class Unit(object):
         return self._plen
 
     def assessment(self, criterion):
-        return self._assessments[criterion][-1].value
+        return self._assessments[criterion][-1]
 
     def reduce(self, indicator, op=sum):
         return op(i.value for i in self._indicators[indicator])
@@ -374,6 +388,11 @@ def main(args):
     columns.extend('S\tMT\tPE'.split())
 
     print '\t'.join(columns)
+    if args.comments:
+        fcomments = open(args.comments, 'w')
+        print >> fcomments, '\t'.join(assessments)
+    else:
+        fcomments = None
 
     for path in args.input.split(','):
         print >> sys.stderr, 'Parsing', path
@@ -387,7 +406,11 @@ def main(args):
                 row.extend([u.hter, u.hter.I, u.hter.D, u.hter.S, u.hter.Sh, u.hter.WSh, u.hter.errors, u.hter.words])
             if assessments:
                 row.append(u.assessing)
-                row.extend(u.assessment(aid) for aid in assessments)
+                row.extend(u.assessment(aid).value for aid in assessments)
+                if fcomments:
+                    print >> fcomments, '\t'.join(u.assessment(aid).comment for aid in assessments)
+
+
             row.extend([u.source0().text, u.mt0().text, u.pe.text])
             print '\t'.join(str(x) for x in row)
 
