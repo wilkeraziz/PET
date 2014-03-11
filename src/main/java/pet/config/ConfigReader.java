@@ -426,9 +426,12 @@ public class ConfigReader {
                 }
                 if (line.startsWith("s2s=")) {
                     String db = line.substring(line.indexOf('=') + 1);
+                    if (!new File(db).isAbsolute()){
+                        db = workspace + File.separator + db;
+                    }
                     VisualLogger.processing("Loading file: " + db);
                     try {
-                        s2s.add(ParaphraseDB.parse(workspace + File.separator + db));
+                        s2s.add(ParaphraseDB.parse(db));
                         VisualLogger.done();
                     } catch (final PETParseException ex) {
                         VisualLogger.error(ex.getMessage());
@@ -438,9 +441,12 @@ public class ConfigReader {
                 }
                 if (line.startsWith("s2t=")) {
                     String db = line.substring(line.indexOf('=') + 1);
+                    if (!new File(db).isAbsolute()){
+                        db = workspace + File.separator + db;
+                    }
                     VisualLogger.processing("Loading file: " + db);
                     try {
-                        s2t.add(ParaphraseDB.parse(workspace + File.separator + db));
+                        s2t.add(ParaphraseDB.parse(db));
                         VisualLogger.done();
                     } catch (final PETParseException ex) {
                         VisualLogger.error(ex.getMessage());
@@ -450,9 +456,12 @@ public class ConfigReader {
                 }
                 if (line.startsWith("t2t=")) {
                     String db = line.substring(line.indexOf('=') + 1);
+                    if (!new File(db).isAbsolute()){
+                        db = workspace + File.separator + db;
+                    }
                     VisualLogger.processing("Loading file: " + db);
                     try {
-                        t2t.add(ParaphraseDB.parse(workspace + File.separator + db));
+                        t2t.add(ParaphraseDB.parse(db));
                         VisualLogger.done();
                     } catch (final PETParseException ex) {
                         VisualLogger.error(ex.getMessage());
@@ -462,9 +471,12 @@ public class ConfigReader {
                 }
                 if (line.startsWith("t2s=")) {
                     String db = line.substring(line.indexOf('=') + 1);
+                    if (!new File(db).isAbsolute()){
+                        db = workspace + File.separator + db;
+                    }
                     VisualLogger.processing("Loading file: " + db);
                     try {
-                        t2s.add(ParaphraseDB.parse(workspace + File.separator + db));
+                        t2s.add(ParaphraseDB.parse(db));
                         VisualLogger.done();
                     } catch (final PETParseException ex) {
                         VisualLogger.error(ex.getMessage());
